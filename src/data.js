@@ -18,6 +18,29 @@ export function detectPlatform(layouts, nav) {
   return /mac|iphone|ipad/i.test(ua) ? 'mac' : layouts.defaultPlatform;
 }
 
+/**
+ * Which keyboard the student is actually sitting at.
+ *
+ * getLayoutMap() reports what each physical key produces on this machine, so
+ * the layout is MEASURED, not guessed from the interface language. A Chilean
+ * school running Windows in English still has Latin American keyboards on the
+ * desks, and navigator.language would get that exactly wrong.
+ *
+ * Chromium only. Anywhere else this returns null and the caller keeps the
+ * configured default, because naming the wrong combination is worse than
+ * naming none: the whole point of the layout tables is to not lie.
+ */
+export async function detectLayout(layouts, nav) {
+  let map = null;
+  try { map = await nav?.keyboard?.getLayoutMap?.(); } catch { map = null; }
+  if (!map) return null;
+  for (const [id, layout] of Object.entries(layouts.layouts)) {
+    const fp = layout.fingerprint;
+    if (fp && Object.entries(fp).every(([code, ch]) => map.get(code) === ch)) return id;
+  }
+  return null;
+}
+
 function combinationLabel(layouts, platformId, modifiers, baseKey) {
   const primary = layouts.platforms[platformId].primaryLabel;
   const parts = modifiers.map(m =>
@@ -55,9 +78,16 @@ export function resolveExpectedInput(layouts, layoutId, platformId, target) {
     key: target,
     modifiers: char.modifiers,
     region: char.region,
+    dead: char.dead === true,
+    code: char.code,
     label: combinationLabel(layouts, platformId, char.modifiers, char.baseKey),
   };
 }
+
+/* AltGr is Ctrl+Alt on Windows: the browser reports ctrlKey true for a key
+   that is producing a character, not running a shortcut. Without this, every
+   AltGr character on a Latin American keyboard — @ and ~ — is rejected. */
+const isAltGr = e => e.altKey === true && e.ctrlKey === true;
 
 /** Does this keyboard event satisfy the expected input? */
 export function matchesExpected(expected, event, layouts, platformId) {
@@ -71,11 +101,20 @@ export function matchesExpected(expected, event, layouts, platformId) {
       && event.shiftKey !== true
       && event.altKey !== true;
   }
+  // A dead key delivers no character on keydown: it waits for the next
+  // keystroke before deciding what to compose. The question asked which keys
+  // make the symbol, and those are the keys, so it counts.
+  if (expected.dead && event.key === 'Dead') {
+    return event.code === expected.code
+      && event.altKey === expected.modifiers.includes('AltGr')
+      && event.shiftKey === expected.modifiers.includes('Shift');
+  }
+
   // A character is judged by what it produced, not by which keys were held —
   // except that a shortcut attempt must never count as a character.
   return event.key === expected.key
-    && event.ctrlKey !== true
-    && event.metaKey !== true;
+    && event.metaKey !== true
+    && (event.ctrlKey !== true || isAltGr(event));
 }
 
 /* -------------------------------------------------------------------- hints */
@@ -189,9 +228,10 @@ export async function loadGameData({ layoutId, platformId, base = '' } = {}) {
       if (!res.ok) throw new JoinError(`could not load ${f} (HTTP ${res.status})`);
       return res.json();
     }));
+  const nav = globalThis.navigator;
   return joinGameData({
     geometry, curriculum, layouts,
-    layoutId,
-    platformId: platformId ?? detectPlatform(layouts, globalThis.navigator),
+    layoutId: layoutId ?? (await detectLayout(layouts, nav)) ?? undefined,
+    platformId: platformId ?? detectPlatform(layouts, nav),
   });
 }

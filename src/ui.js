@@ -53,10 +53,20 @@ export function startUI(initialData) {
 
   layoutsPromise.then(cfg => {
     layouts = cfg;
-    $('platform').value = data.platformId;
+    fillLayoutMenu();
     build();
+
+    // A teacher's explicit choice outranks anything the browser worked out.
+    const wanted = chosenSetup();
+    if (wanted.layoutId !== data.layoutId || wanted.platformId !== data.platformId) {
+      switchConfig(wanted);
+    }
+
+    $('layout').addEventListener('change', e => {
+      switchConfig({ layoutId: e.target.value });
+    });
     $('platform').addEventListener('change', e => {
-      switchPlatform(e.target.value);
+      switchConfig({ platformId: e.target.value });
     });
     $('restart').addEventListener('click', () => { build(); $('restart').blur(); });
     window.addEventListener('keydown', onKey, { capture: true });
@@ -67,12 +77,50 @@ export function startUI(initialData) {
     window.addEventListener('blur', releaseModifiers);
   });
 
-  function switchPlatform(platformId) {
+  /* The keyboard on the desk and the modifier key are two separate axes: a
+     Latin American keyboard is just as common on Windows as on a Mac. */
+  const STORE = 'keyboard-octopus:setup';
+
+  function saved() {
+    try { return JSON.parse(localStorage.getItem(STORE)) ?? {}; } catch { return {}; }
+  }
+
+  function valid(kind, id) {
+    return id && layouts[kind][id] ? id : null;
+  }
+
+  /** URL wins, then the choice this machine remembers, then what was detected. */
+  function chosenSetup() {
+    const q = new URLSearchParams(location.search);
+    return {
+      layoutId: valid('layouts', q.get('layout'))
+             ?? valid('layouts', saved().layoutId) ?? data.layoutId,
+      platformId: valid('platforms', q.get('keys'))
+               ?? valid('platforms', saved().platformId) ?? data.platformId,
+    };
+  }
+
+  function fillLayoutMenu() {
+    const sel = $('layout');
+    sel.replaceChildren();
+    for (const [id, l] of Object.entries(layouts.layouts)) {
+      const o = document.createElement('option');
+      o.value = id;
+      o.textContent = l.name;
+      sel.appendChild(o);
+    }
+  }
+
+  function switchConfig({ layoutId, platformId }) {
+    const lid = layoutId ?? data.layoutId;
+    const pid = platformId ?? data.platformId;
     Promise.all([
       fetch('octopus-path-LOCKED.json').then(r => r.json()),
       fetch('keyboard-curriculum.json').then(r => r.json()),
     ]).then(([geometry, curriculum]) => {
-      data = joinGameData({ geometry, curriculum, layouts, platformId });
+      data = joinGameData({ geometry, curriculum, layouts, layoutId: lid, platformId: pid });
+      try { localStorage.setItem(STORE, JSON.stringify({ layoutId: lid, platformId: pid })); }
+      catch { /* a locked-down school profile is not a reason to stop playing */ }
       build();
     });
   }
@@ -82,6 +130,8 @@ export function startUI(initialData) {
   function build() {
     game = createGame(data, layouts);
     refs = drawBoard(data);
+    $('layout').value = data.layoutId;
+    $('platform').value = data.platformId;
     $('layoutName').textContent = `${data.layoutName} · ${data.platformName}`;
     renderStep();
     setStatus('', '');
@@ -190,11 +240,13 @@ export function startUI(initialData) {
       'combination-recall': 'What does this type?',
       'shortcut-recall': 'What is the shortcut for',
     })[step.challenge.challengeType];
-    $('ask').textContent = ({
-      'character-recall': 'Press the combination on your keyboard.',
-      'combination-recall': 'Press it, and see what appears.',
-      'shortcut-recall': 'Press the shortcut.',
-    })[step.challenge.challengeType];
+    $('ask').textContent = step.challenge.expected.dead
+      ? 'Careful: this is a dead key. Nothing appears until you press the next key.'
+      : ({
+          'character-recall': 'Press the combination on your keyboard.',
+          'combination-recall': 'Press it, and see what appears.',
+          'shortcut-recall': 'Press the shortcut.',
+        })[step.challenge.challengeType];
   }
 
   function hideActiveMarkers() {
@@ -308,14 +360,19 @@ export function startUI(initialData) {
     // selecting the page or scrolling on space.
     e.preventDefault();
 
+    const solving = game.currentStep();
     const r = game.submit(e);
     if (!r.handled) return;
 
     if (r.correct) {
+      const viaDeadKey = e.key === 'Dead' && solving?.challenge.expected.dead;
       drawSegments(r.segments);
       renderStep();
       updateProgress();
-      setStatus(r.attempts === 0 ? 'Yes!' : 'Got it.', 'good');
+      setStatus(
+        viaDeadKey ? `Yes! Those are the keys. When you are really writing, ` +
+                     `press Space next and the ${solving.challenge.target} appears.`
+                   : (r.attempts === 0 ? 'Yes!' : 'Got it.'), 'good');
       showHint(null);
       if (r.completedAll) onComplete();
     } else {
