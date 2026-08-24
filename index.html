@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keyboard Octopus</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#129422;</text></svg>">
+<style>
+  :root {
+    --bg:#eef1f6; --panel:#fff; --ink:#16181d; --muted:#68707d; --border:#d5dae3;
+    --pending:#c3cad6; --active:#f0a500; --done:#d64545; --line:#1f2530;
+    --face:#1f2530; --good:#1a8f4c; --bad:#c93a2c; --accent:#3253d8;
+    --shadow:0 1px 3px rgba(20,25,40,.10), 0 6px 20px rgba(20,25,40,.07);
+  }
+  :root:not([data-theme="light"]) { }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#101319; --panel:#181c24; --ink:#e9ecf2; --muted:#98a1b0; --border:#282e3a;
+      --pending:#3c434f; --active:#ffc043; --done:#ff6f60; --line:#e9ecf2;
+      --face:#e9ecf2; --good:#4ade80; --bad:#ff8a7a; --accent:#7c9bff;
+      --shadow:0 1px 3px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing:border-box; }
+  html,body { height:100%; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex; flex-direction:column;
+  }
+
+  header {
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:10px 18px; background:var(--panel); border-bottom:1px solid var(--border);
+  }
+  .brand { font-weight:650; letter-spacing:-.01em; font-size:16px; white-space:nowrap; }
+  .brand span { font-size:19px; }
+  .bar { flex:1; min-width:160px; height:9px; border-radius:99px;
+         background:var(--border); overflow:hidden; }
+  .bar > i { display:block; height:100%; width:0; border-radius:99px;
+             background:var(--accent); transition:width .25s ease; }
+  .count { font:600 13px/1 ui-monospace,monospace; color:var(--muted);
+           white-space:nowrap; font-variant-numeric:tabular-nums; }
+  header select, header button {
+    font:inherit; font-size:13px; padding:5px 9px; border-radius:7px;
+    border:1px solid var(--border); background:var(--panel); color:var(--ink); cursor:pointer;
+  }
+
+  main { flex:1; display:grid; grid-template-columns:1fr 320px; gap:16px; padding:16px;
+         min-height:0; }
+  @media (max-width:860px) { main { grid-template-columns:1fr; } }
+
+  .board { background:var(--panel); border:1px solid var(--border); border-radius:14px;
+           box-shadow:var(--shadow); overflow:hidden; display:flex; min-height:0; }
+  .board svg { width:100%; height:100%; display:block; }
+
+  /* --- dots and lines --------------------------------------------------- */
+  .dot        { fill:var(--pending); r:4.6; }
+  .dot.done   { fill:var(--done); r:5.2; }
+  .dot.active { fill:var(--active); r:8; }
+  .num        { fill:var(--muted); font:8px ui-monospace,monospace;
+                paint-order:stroke; stroke:var(--panel); stroke-width:2.4px; }
+  .num.done   { fill:var(--done); opacity:.65; }
+  .num.active { fill:var(--active); font-weight:700; font-size:11px; }
+  .seg        { stroke:var(--line); stroke-width:2.8; stroke-linecap:round; fill:none; }
+  .face       { fill:var(--face); }
+  .smile      { fill:none; stroke:var(--face); stroke-width:3.4; stroke-linecap:round; }
+  #halo       { fill:none; stroke:var(--active); stroke-width:2.4; opacity:.55; }
+  .badge      { fill:var(--active); }
+  .badgeText  { fill:#1b1200; font:700 15px ui-sans-serif,system-ui,sans-serif;
+                text-anchor:middle; dominant-baseline:central; }
+
+  /* --- side panel ------------------------------------------------------- */
+  aside { display:flex; flex-direction:column; gap:12px; min-height:0; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:14px;
+          box-shadow:var(--shadow); padding:16px; }
+  .label { font:600 11px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.09em;
+           text-transform:uppercase; color:var(--muted); }
+  .prompt { margin:12px 0 6px; font:700 clamp(38px,7vw,60px)/1.05 ui-monospace,monospace;
+            text-align:center; word-break:break-word; }
+  .prompt.word { font-size:clamp(24px,4.4vw,34px); letter-spacing:.02em; }
+  .ask { text-align:center; color:var(--muted); font-size:13px; }
+  .card.shake { animation:shake .3s; border-color:var(--bad); }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)}
+    40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)}
+  }
+  @media (prefers-reduced-motion:reduce) { .card.shake { animation:none; } }
+  .status { min-height:22px; text-align:center; font-size:13px; font-weight:600; }
+  .status.bad  { color:var(--bad); }
+  .status.good { color:var(--good); }
+  .hint { border-left:3px solid var(--active); padding:8px 12px; border-radius:0 8px 8px 0;
+          background:color-mix(in srgb, var(--active) 12%, transparent); font-size:14px; }
+  .hint b { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+            color:var(--muted); margin-bottom:2px; }
+
+  /* --- live key readout ------------------------------------------------- */
+  .live { display:flex; flex-direction:column; gap:10px; }
+  .live-char { min-height:54px; display:flex; align-items:center; justify-content:center;
+               font:700 clamp(30px,6vw,46px)/1 ui-monospace,monospace; word-break:break-word;
+               text-align:center; }
+  .live-char.empty { font:600 15px/1 ui-sans-serif,system-ui,sans-serif; color:var(--muted); }
+  .live-mods { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+  .chip { font:600 11px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.06em;
+          text-transform:uppercase; padding:6px 10px; border-radius:99px;
+          border:1px solid var(--border); color:var(--muted);
+          transition:background .08s ease, color .08s ease, border-color .08s ease; }
+  .chip.on { background:var(--active); border-color:var(--active); color:#1b1200; }
+  @media (prefers-reduced-motion:reduce) { .chip { transition:none; } }
+  .live-tech { text-align:center; font:12px/1.5 ui-monospace,monospace; color:var(--muted);
+               word-break:break-word; }
+  .meta { font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; }
+  .err { margin:40px auto; max-width:640px; }
+  code { background:rgba(128,128,128,.16); padding:2px 6px; border-radius:5px;
+         font:13px ui-monospace,monospace; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span>🐙</span> Keyboard Octopus</div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="count" id="count">0 / 0</div>
+    <label class="count" for="platform">Keys</label>
+    <select id="platform">
+      <option value="windows">Ctrl (Windows / Linux)</option>
+      <option value="mac">Cmd (macOS)</option>
+    </select>
+    <button id="restart" type="button">Restart</button>
+  </header>
+
+  <main id="main">
+    <div class="board"><svg id="board" aria-label="Connect-the-dots board"></svg></div>
+    <aside>
+      <div class="card" id="challengeCard">
+        <div class="label" id="challengeKind">Challenge</div>
+        <div class="prompt" id="prompt">…</div>
+        <div class="ask" id="ask"></div>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <div class="card live" id="liveCard">
+        <div class="label">Live input · what the browser sees</div>
+        <div class="live-char empty" id="liveChar">Waiting…</div>
+        <div class="live-mods" id="liveMods"></div>
+        <div class="live-tech" id="liveTech">Press any key.</div>
+      </div>
+      <div class="card hint" id="hint" hidden></div>
+      <div class="card meta">
+        <span id="layoutName">—</span><span id="stats">—</span>
+      </div>
+    </aside>
+  </main>
+
+<script type="module">
+import { loadGameData } from './src/data.js';
+import { startUI } from './src/ui.js';
+
+loadGameData().then(startUI).catch(err => {
+  document.getElementById('main').innerHTML =
+    `<div class="card err"><strong>Could not start.</strong>
+     <p>${err.message}</p>
+     <p>If this mentions loading a file, the page needs a server —
+     browsers block <code>fetch</code> over <code>file://</code>:</p>
+     <p><code>python3 -m http.server 8731</code> then open
+     <code>http://localhost:8731/</code></p></div>`;
+});
+</script>
+</body>
+</html>

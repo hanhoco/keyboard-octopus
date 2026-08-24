@@ -1,0 +1,1119 @@
+{
+  "meta": {
+    "name": "keyboard-curriculum",
+    "builtFor": {
+      "layout": "us",
+      "layoutName": "US QWERTY",
+      "platform": "windows",
+      "platformName": "Windows / Linux"
+    },
+    "seed": 20260822,
+    "challengeCount": 107,
+    "$comment": [
+      "expectedInput is DERIVED from keyboard-layouts.json for the layout named",
+      "above. It is informational — for teachers reading this file and for tests.",
+      "The runtime resolves input from 'target' + the live layout config, so this",
+      "field can never silently disagree with what the game actually accepts.",
+      "This file contains NO coordinates. Editing a prompt cannot move a dot."
+    ],
+    "challengeTypes": {
+      "character-recall": "Show the character. Student recalls and produces the combination. Genuine retrieval: character -> combination.",
+      "combination-recall": "Show the combination. Student produces the character. Teaches the written notation. NOTE: mechanically the same keypress as the forward direction, so it is the weaker of the two for memory.",
+      "shortcut-recall": "Show the action word (COPY). Student recalls the shortcut. Genuine retrieval: meaning -> combination."
+    },
+    "hintPolicy": {
+      "$comment": "Hints are DERIVED at runtime from the layout so they cannot drift.",
+      "enabled": true,
+      "tiers": [
+        {
+          "afterAttempts": 2,
+          "reveals": "modifier",
+          "example": "This one uses SHIFT."
+        },
+        {
+          "afterAttempts": 4,
+          "reveals": "region",
+          "example": "Look at the number row."
+        },
+        {
+          "afterAttempts": 6,
+          "reveals": "answer",
+          "example": "SHIFT + 2"
+        }
+      ]
+    },
+    "droppedCharacters": []
+  },
+  "challenges": [
+    {
+      "sequence": 1,
+      "prompt": "$",
+      "expectedInput": "Shift+4",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "$",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 2,
+      "prompt": "!",
+      "expectedInput": "Shift+1",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "!",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 3,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 4,
+      "prompt": "PASTE",
+      "expectedInput": "Ctrl+V",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "PASTE",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 5,
+      "prompt": "@",
+      "expectedInput": "Shift+2",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "@",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 6,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 7,
+      "prompt": "%",
+      "expectedInput": "Shift+5",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "%",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 8,
+      "prompt": "Shift + 3",
+      "expectedInput": "Shift+3",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "#",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 9,
+      "prompt": "Shift + 4",
+      "expectedInput": "Shift+4",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "$",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 10,
+      "prompt": "PASTE",
+      "expectedInput": "Ctrl+V",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "PASTE",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 11,
+      "prompt": "!",
+      "expectedInput": "Shift+1",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "!",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 12,
+      "prompt": "Shift + 2",
+      "expectedInput": "Shift+2",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "@",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 13,
+      "prompt": "%",
+      "expectedInput": "Shift+5",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "%",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 14,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 15,
+      "prompt": "PASTE",
+      "expectedInput": "Ctrl+V",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "PASTE",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 16,
+      "prompt": "!",
+      "expectedInput": "Shift+1",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "!",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 17,
+      "prompt": "#",
+      "expectedInput": "Shift+3",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "#",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 18,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 19,
+      "prompt": "@",
+      "expectedInput": "Shift+2",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "@",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 20,
+      "prompt": "PASTE",
+      "expectedInput": "Ctrl+V",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "PASTE",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 21,
+      "prompt": "Shift + 4",
+      "expectedInput": "Shift+4",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "$",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 22,
+      "prompt": "!",
+      "expectedInput": "Shift+1",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "!",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 23,
+      "prompt": "%",
+      "expectedInput": "Shift+5",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "%",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 24,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 25,
+      "prompt": "Shift + 7",
+      "expectedInput": "Shift+7",
+      "challengeType": "combination-recall",
+      "difficulty": 2,
+      "target": "&",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 26,
+      "prompt": "^",
+      "expectedInput": "Shift+6",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "^",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 27,
+      "prompt": "#",
+      "expectedInput": "Shift+3",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "#",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 28,
+      "prompt": "CUT",
+      "expectedInput": "Ctrl+X",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "CUT",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 29,
+      "prompt": "Shift + 0",
+      "expectedInput": "Shift+0",
+      "challengeType": "combination-recall",
+      "difficulty": 2,
+      "target": ")",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 30,
+      "prompt": "$",
+      "expectedInput": "Shift+4",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "$",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 31,
+      "prompt": "Shift + 2",
+      "expectedInput": "Shift+2",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "@",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 32,
+      "prompt": "PASTE",
+      "expectedInput": "Ctrl+V",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "PASTE",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 33,
+      "prompt": "!",
+      "expectedInput": "Shift+1",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "!",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 34,
+      "prompt": "Shift + 6",
+      "expectedInput": "Shift+6",
+      "challengeType": "combination-recall",
+      "difficulty": 2,
+      "target": "^",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 35,
+      "prompt": "%",
+      "expectedInput": "Shift+5",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "%",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 36,
+      "prompt": "UNDO",
+      "expectedInput": "Ctrl+Z",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "UNDO",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 37,
+      "prompt": ")",
+      "expectedInput": "Shift+0",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": ")",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 38,
+      "prompt": "&",
+      "expectedInput": "Shift+7",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "&",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 39,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 40,
+      "prompt": "SELECT ALL",
+      "expectedInput": "Ctrl+A",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "SELECT ALL",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 41,
+      "prompt": "Shift + 1",
+      "expectedInput": "Shift+1",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "!",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 42,
+      "prompt": "Shift + 4",
+      "expectedInput": "Shift+4",
+      "challengeType": "combination-recall",
+      "difficulty": 1,
+      "target": "$",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 43,
+      "prompt": "#",
+      "expectedInput": "Shift+3",
+      "challengeType": "character-recall",
+      "difficulty": 1,
+      "target": "#",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 44,
+      "prompt": "CUT",
+      "expectedInput": "Ctrl+X",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "CUT",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 45,
+      "prompt": "UNDO",
+      "expectedInput": "Ctrl+Z",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "UNDO",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 46,
+      "prompt": "^",
+      "expectedInput": "Shift+6",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "^",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 47,
+      "prompt": "COPY",
+      "expectedInput": "Ctrl+C",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "COPY",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 48,
+      "prompt": "(",
+      "expectedInput": "Shift+9",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "(",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 49,
+      "prompt": "PASTE",
+      "expectedInput": "Ctrl+V",
+      "challengeType": "shortcut-recall",
+      "difficulty": 1,
+      "target": "PASTE",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 50,
+      "prompt": "SELECT ALL",
+      "expectedInput": "Ctrl+A",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "SELECT ALL",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 51,
+      "prompt": "*",
+      "expectedInput": "Shift+8",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "*",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 52,
+      "prompt": "&",
+      "expectedInput": "Shift+7",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "&",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 53,
+      "prompt": "Shift + ;",
+      "expectedInput": "Shift+;",
+      "challengeType": "combination-recall",
+      "difficulty": 3,
+      "target": ":",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 54,
+      "prompt": "BOLD",
+      "expectedInput": "Ctrl+B",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "BOLD",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 55,
+      "prompt": "+",
+      "expectedInput": "Shift+=",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "+",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 56,
+      "prompt": "Shift + /",
+      "expectedInput": "Shift+/",
+      "challengeType": "combination-recall",
+      "difficulty": 3,
+      "target": "?",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 57,
+      "prompt": "CUT",
+      "expectedInput": "Ctrl+X",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "CUT",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 58,
+      "prompt": "^",
+      "expectedInput": "Shift+6",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "^",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 59,
+      "prompt": "SAVE",
+      "expectedInput": "Ctrl+S",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "SAVE",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 60,
+      "prompt": "UNDO",
+      "expectedInput": "Ctrl+Z",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "UNDO",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 61,
+      "prompt": "\"",
+      "expectedInput": "Shift+'",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "\"",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 62,
+      "prompt": "&",
+      "expectedInput": "Shift+7",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "&",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 63,
+      "prompt": "Shift + 8",
+      "expectedInput": "Shift+8",
+      "challengeType": "combination-recall",
+      "difficulty": 2,
+      "target": "*",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 64,
+      "prompt": "SELECT ALL",
+      "expectedInput": "Ctrl+A",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "SELECT ALL",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 65,
+      "prompt": "CUT",
+      "expectedInput": "Ctrl+X",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "CUT",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 66,
+      "prompt": "Shift + /",
+      "expectedInput": "Shift+/",
+      "challengeType": "combination-recall",
+      "difficulty": 3,
+      "target": "?",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 67,
+      "prompt": "(",
+      "expectedInput": "Shift+9",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "(",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 68,
+      "prompt": ":",
+      "expectedInput": "Shift+;",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": ":",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 69,
+      "prompt": "UNDO",
+      "expectedInput": "Ctrl+Z",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "UNDO",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 70,
+      "prompt": "SAVE",
+      "expectedInput": "Ctrl+S",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "SAVE",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 71,
+      "prompt": "+",
+      "expectedInput": "Shift+=",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "+",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 72,
+      "prompt": ")",
+      "expectedInput": "Shift+0",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": ")",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 73,
+      "prompt": "Shift + 7",
+      "expectedInput": "Shift+7",
+      "challengeType": "combination-recall",
+      "difficulty": 2,
+      "target": "&",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 74,
+      "prompt": "SELECT ALL",
+      "expectedInput": "Ctrl+A",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "SELECT ALL",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 75,
+      "prompt": "Shift + -",
+      "expectedInput": "Shift+-",
+      "challengeType": "combination-recall",
+      "difficulty": 3,
+      "target": "_",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 76,
+      "prompt": "Shift + 6",
+      "expectedInput": "Shift+6",
+      "challengeType": "combination-recall",
+      "difficulty": 2,
+      "target": "^",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 77,
+      "prompt": "\"",
+      "expectedInput": "Shift+'",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "\"",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 78,
+      "prompt": "UNDO",
+      "expectedInput": "Ctrl+Z",
+      "challengeType": "shortcut-recall",
+      "difficulty": 2,
+      "target": "UNDO",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 79,
+      "prompt": "BOLD",
+      "expectedInput": "Ctrl+B",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "BOLD",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 80,
+      "prompt": ":",
+      "expectedInput": "Shift+;",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": ":",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 81,
+      "prompt": "*",
+      "expectedInput": "Shift+8",
+      "challengeType": "character-recall",
+      "difficulty": 2,
+      "target": "*",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 82,
+      "prompt": "Shift + .",
+      "expectedInput": "Shift+.",
+      "challengeType": "combination-recall",
+      "difficulty": 4,
+      "target": ">",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 83,
+      "prompt": "FIND",
+      "expectedInput": "Ctrl+F",
+      "challengeType": "shortcut-recall",
+      "difficulty": 4,
+      "target": "FIND",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 84,
+      "prompt": "<",
+      "expectedInput": "Shift+,",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "<",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 85,
+      "prompt": "REDO",
+      "expectedInput": "Ctrl+Y",
+      "challengeType": "shortcut-recall",
+      "difficulty": 4,
+      "target": "REDO",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 86,
+      "prompt": "{",
+      "expectedInput": "Shift+[",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "{",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 87,
+      "prompt": "+",
+      "expectedInput": "Shift+=",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "+",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 88,
+      "prompt": "SAVE",
+      "expectedInput": "Ctrl+S",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "SAVE",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 89,
+      "prompt": "\"",
+      "expectedInput": "Shift+'",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "\"",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 90,
+      "prompt": "BOLD",
+      "expectedInput": "Ctrl+B",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "BOLD",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 91,
+      "prompt": "FIND",
+      "expectedInput": "Ctrl+F",
+      "challengeType": "shortcut-recall",
+      "difficulty": 4,
+      "target": "FIND",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 92,
+      "prompt": "~",
+      "expectedInput": "Shift+`",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "~",
+      "region": "topLeft",
+      "family": "shift"
+    },
+    {
+      "sequence": 93,
+      "prompt": "|",
+      "expectedInput": "Shift+\\",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "|",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 94,
+      "prompt": "REDO",
+      "expectedInput": "Ctrl+Y",
+      "challengeType": "shortcut-recall",
+      "difficulty": 4,
+      "target": "REDO",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 95,
+      "prompt": ":",
+      "expectedInput": "Shift+;",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": ":",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 96,
+      "prompt": "Shift + -",
+      "expectedInput": "Shift+-",
+      "challengeType": "combination-recall",
+      "difficulty": 3,
+      "target": "_",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 97,
+      "prompt": "BOLD",
+      "expectedInput": "Ctrl+B",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "BOLD",
+      "region": "bottomRow",
+      "family": "primary"
+    },
+    {
+      "sequence": 98,
+      "prompt": "}",
+      "expectedInput": "Shift+]",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "}",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 99,
+      "prompt": "SAVE",
+      "expectedInput": "Ctrl+S",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "SAVE",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 100,
+      "prompt": "?",
+      "expectedInput": "Shift+/",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "?",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 101,
+      "prompt": "{",
+      "expectedInput": "Shift+[",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "{",
+      "region": "rightOfLetters",
+      "family": "shift"
+    },
+    {
+      "sequence": 102,
+      "prompt": "FIND",
+      "expectedInput": "Ctrl+F",
+      "challengeType": "shortcut-recall",
+      "difficulty": 4,
+      "target": "FIND",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 103,
+      "prompt": "<",
+      "expectedInput": "Shift+,",
+      "challengeType": "character-recall",
+      "difficulty": 4,
+      "target": "<",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 104,
+      "prompt": "REDO",
+      "expectedInput": "Ctrl+Y",
+      "challengeType": "shortcut-recall",
+      "difficulty": 4,
+      "target": "REDO",
+      "region": "letters",
+      "family": "primary"
+    },
+    {
+      "sequence": 105,
+      "prompt": "Shift + .",
+      "expectedInput": "Shift+.",
+      "challengeType": "combination-recall",
+      "difficulty": 4,
+      "target": ">",
+      "region": "bottomRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 106,
+      "prompt": "+",
+      "expectedInput": "Shift+=",
+      "challengeType": "character-recall",
+      "difficulty": 3,
+      "target": "+",
+      "region": "numberRow",
+      "family": "shift"
+    },
+    {
+      "sequence": 107,
+      "prompt": "SAVE",
+      "expectedInput": "Ctrl+S",
+      "challengeType": "shortcut-recall",
+      "difficulty": 3,
+      "target": "SAVE",
+      "region": "letters",
+      "family": "primary"
+    }
+  ]
+}

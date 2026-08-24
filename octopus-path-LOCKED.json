@@ -1,0 +1,810 @@
+{
+  "meta": {
+    "name": "octopus",
+    "source": "reference/octopus-reference.png",
+    "derivation": "measured centroids; uniform scale + centre + renumber only",
+    "canvas": {
+      "width": 1000.0,
+      "height": 900.0
+    },
+    "closed": true,
+    "dotCount": 107,
+    "segmentCount": 107,
+    "referenceLabelRange": [
+      2,
+      108
+    ],
+    "tentacleNotches": [
+      12,
+      22,
+      34,
+      47,
+      59,
+      73,
+      89,
+      108
+    ],
+    "face": {
+      "comment": "pre-printed on the reference, NOT part of the dot path",
+      "leftEye": {
+        "cx": 505.55,
+        "cy": 260.72,
+        "rx": 46.0,
+        "ry": 54.0
+      },
+      "rightEye": {
+        "cx": 627.13,
+        "cy": 261.62,
+        "rx": 45.5,
+        "ry": 54.5
+      },
+      "smileBox": {
+        "x": 416,
+        "y": 318,
+        "w": 349,
+        "h": 151
+      },
+      "space": "reference pixels; apply the same scale/offset as the dots",
+      "transform": {
+        "scale": 0.858268,
+        "offsetX": -4.735,
+        "offsetY": 21.016
+      }
+    },
+    "locked": true,
+    "lockedAt": "2026-08-22",
+    "sourceSha256": "83916587c8642575e81840d81be90305deed5417748acf99eeedaed87f14c73a",
+    "lockNote": "Geometry frozen at Stage 3. Do NOT modify coordinates without an explicit instruction."
+  },
+  "dots": [
+    {
+      "id": "dot-001",
+      "sequence": 1,
+      "x": 298.48,
+      "y": 410.81,
+      "referenceLabel": 2
+    },
+    {
+      "id": "dot-002",
+      "sequence": 2,
+      "x": 264.76,
+      "y": 321.84,
+      "referenceLabel": 3
+    },
+    {
+      "id": "dot-003",
+      "sequence": 3,
+      "x": 265.83,
+      "y": 214.98,
+      "referenceLabel": 4
+    },
+    {
+      "id": "dot-004",
+      "sequence": 4,
+      "x": 314.97,
+      "y": 105.56,
+      "referenceLabel": 5
+    },
+    {
+      "id": "dot-005",
+      "sequence": 5,
+      "x": 417.77,
+      "y": 26.9,
+      "referenceLabel": 6
+    },
+    {
+      "id": "dot-006",
+      "sequence": 6,
+      "x": 555.48,
+      "y": 25.44,
+      "referenceLabel": 7
+    },
+    {
+      "id": "dot-007",
+      "sequence": 7,
+      "x": 641.41,
+      "y": 78.29,
+      "referenceLabel": 8
+    },
+    {
+      "id": "dot-008",
+      "sequence": 8,
+      "x": 704.84,
+      "y": 175.29,
+      "referenceLabel": 9
+    },
+    {
+      "id": "dot-009",
+      "sequence": 9,
+      "x": 718.26,
+      "y": 299.95,
+      "referenceLabel": 10
+    },
+    {
+      "id": "dot-010",
+      "sequence": 10,
+      "x": 682.47,
+      "y": 409.0,
+      "referenceLabel": 11
+    },
+    {
+      "id": "dot-011",
+      "sequence": 11,
+      "x": 592.12,
+      "y": 497.41,
+      "referenceLabel": 12
+    },
+    {
+      "id": "dot-012",
+      "sequence": 12,
+      "x": 655.99,
+      "y": 512.48,
+      "referenceLabel": 13
+    },
+    {
+      "id": "dot-013",
+      "sequence": 13,
+      "x": 709.02,
+      "y": 510.09,
+      "referenceLabel": 14
+    },
+    {
+      "id": "dot-014",
+      "sequence": 14,
+      "x": 800.75,
+      "y": 412.82,
+      "referenceLabel": 15
+    },
+    {
+      "id": "dot-015",
+      "sequence": 15,
+      "x": 887.21,
+      "y": 394.36,
+      "referenceLabel": 16
+    },
+    {
+      "id": "dot-016",
+      "sequence": 16,
+      "x": 976.0,
+      "y": 433.79,
+      "referenceLabel": 17
+    },
+    {
+      "id": "dot-017",
+      "sequence": 17,
+      "x": 974.21,
+      "y": 476.76,
+      "referenceLabel": 18
+    },
+    {
+      "id": "dot-018",
+      "sequence": 18,
+      "x": 928.25,
+      "y": 465.33,
+      "referenceLabel": 19
+    },
+    {
+      "id": "dot-019",
+      "sequence": 19,
+      "x": 865.73,
+      "y": 449.21,
+      "referenceLabel": 20
+    },
+    {
+      "id": "dot-020",
+      "sequence": 20,
+      "x": 798.39,
+      "y": 487.27,
+      "referenceLabel": 21
+    },
+    {
+      "id": "dot-021",
+      "sequence": 21,
+      "x": 746.46,
+      "y": 546.92,
+      "referenceLabel": 22
+    },
+    {
+      "id": "dot-022",
+      "sequence": 22,
+      "x": 851.87,
+      "y": 582.82,
+      "referenceLabel": 23
+    },
+    {
+      "id": "dot-023",
+      "sequence": 23,
+      "x": 924.11,
+      "y": 676.29,
+      "referenceLabel": 24
+    },
+    {
+      "id": "dot-024",
+      "sequence": 24,
+      "x": 899.67,
+      "y": 765.13,
+      "referenceLabel": 25
+    },
+    {
+      "id": "dot-025",
+      "sequence": 25,
+      "x": 843.02,
+      "y": 790.67,
+      "referenceLabel": 26
+    },
+    {
+      "id": "dot-026",
+      "sequence": 26,
+      "x": 801.23,
+      "y": 773.98,
+      "referenceLabel": 27
+    },
+    {
+      "id": "dot-027",
+      "sequence": 27,
+      "x": 823.62,
+      "y": 742.19,
+      "referenceLabel": 28
+    },
+    {
+      "id": "dot-028",
+      "sequence": 28,
+      "x": 870.07,
+      "y": 718.92,
+      "referenceLabel": 29
+    },
+    {
+      "id": "dot-029",
+      "sequence": 29,
+      "x": 867.19,
+      "y": 666.61,
+      "referenceLabel": 30
+    },
+    {
+      "id": "dot-030",
+      "sequence": 30,
+      "x": 806.48,
+      "y": 620.09,
+      "referenceLabel": 31
+    },
+    {
+      "id": "dot-031",
+      "sequence": 31,
+      "x": 728.23,
+      "y": 603.35,
+      "referenceLabel": 32
+    },
+    {
+      "id": "dot-032",
+      "sequence": 32,
+      "x": 624.59,
+      "y": 597.99,
+      "referenceLabel": 33
+    },
+    {
+      "id": "dot-033",
+      "sequence": 33,
+      "x": 574.6,
+      "y": 587.81,
+      "referenceLabel": 34
+    },
+    {
+      "id": "dot-034",
+      "sequence": 34,
+      "x": 612.15,
+      "y": 627.17,
+      "referenceLabel": 35
+    },
+    {
+      "id": "dot-035",
+      "sequence": 35,
+      "x": 669.22,
+      "y": 670.08,
+      "referenceLabel": 36
+    },
+    {
+      "id": "dot-036",
+      "sequence": 36,
+      "x": 747.34,
+      "y": 740.37,
+      "referenceLabel": 37
+    },
+    {
+      "id": "dot-037",
+      "sequence": 37,
+      "x": 750.33,
+      "y": 810.84,
+      "referenceLabel": 38
+    },
+    {
+      "id": "dot-038",
+      "sequence": 38,
+      "x": 715.78,
+      "y": 873.28,
+      "referenceLabel": 39
+    },
+    {
+      "id": "dot-039",
+      "sequence": 39,
+      "x": 664.71,
+      "y": 874.56,
+      "referenceLabel": 40
+    },
+    {
+      "id": "dot-040",
+      "sequence": 40,
+      "x": 662.57,
+      "y": 835.08,
+      "referenceLabel": 41
+    },
+    {
+      "id": "dot-041",
+      "sequence": 41,
+      "x": 700.11,
+      "y": 810.62,
+      "referenceLabel": 42
+    },
+    {
+      "id": "dot-042",
+      "sequence": 42,
+      "x": 699.9,
+      "y": 764.71,
+      "referenceLabel": 43
+    },
+    {
+      "id": "dot-043",
+      "sequence": 43,
+      "x": 659.56,
+      "y": 724.27,
+      "referenceLabel": 44
+    },
+    {
+      "id": "dot-044",
+      "sequence": 44,
+      "x": 589.19,
+      "y": 678.97,
+      "referenceLabel": 45
+    },
+    {
+      "id": "dot-045",
+      "sequence": 45,
+      "x": 552.87,
+      "y": 640.74,
+      "referenceLabel": 46
+    },
+    {
+      "id": "dot-046",
+      "sequence": 46,
+      "x": 518.38,
+      "y": 599.06,
+      "referenceLabel": 47
+    },
+    {
+      "id": "dot-047",
+      "sequence": 47,
+      "x": 532.54,
+      "y": 655.71,
+      "referenceLabel": 48
+    },
+    {
+      "id": "dot-048",
+      "sequence": 48,
+      "x": 535.55,
+      "y": 735.1,
+      "referenceLabel": 49
+    },
+    {
+      "id": "dot-049",
+      "sequence": 49,
+      "x": 548.63,
+      "y": 797.53,
+      "referenceLabel": 50
+    },
+    {
+      "id": "dot-050",
+      "sequence": 50,
+      "x": 580.18,
+      "y": 811.91,
+      "referenceLabel": 51
+    },
+    {
+      "id": "dot-051",
+      "sequence": 51,
+      "x": 611.25,
+      "y": 792.17,
+      "referenceLabel": 52
+    },
+    {
+      "id": "dot-052",
+      "sequence": 52,
+      "x": 636.89,
+      "y": 814.11,
+      "referenceLabel": 53
+    },
+    {
+      "id": "dot-053",
+      "sequence": 53,
+      "x": 618.49,
+      "y": 853.79,
+      "referenceLabel": 54
+    },
+    {
+      "id": "dot-054",
+      "sequence": 54,
+      "x": 563.01,
+      "y": 862.98,
+      "referenceLabel": 55
+    },
+    {
+      "id": "dot-055",
+      "sequence": 55,
+      "x": 520.53,
+      "y": 840.14,
+      "referenceLabel": 56
+    },
+    {
+      "id": "dot-056",
+      "sequence": 56,
+      "x": 495.58,
+      "y": 782.89,
+      "referenceLabel": 57
+    },
+    {
+      "id": "dot-057",
+      "sequence": 57,
+      "x": 489.63,
+      "y": 721.89,
+      "referenceLabel": 58
+    },
+    {
+      "id": "dot-058",
+      "sequence": 58,
+      "x": 476.13,
+      "y": 650.26,
+      "referenceLabel": 59
+    },
+    {
+      "id": "dot-059",
+      "sequence": 59,
+      "x": 457.17,
+      "y": 697.49,
+      "referenceLabel": 60
+    },
+    {
+      "id": "dot-060",
+      "sequence": 60,
+      "x": 417.15,
+      "y": 738.89,
+      "referenceLabel": 61
+    },
+    {
+      "id": "dot-061",
+      "sequence": 61,
+      "x": 352.73,
+      "y": 765.56,
+      "referenceLabel": 62
+    },
+    {
+      "id": "dot-062",
+      "sequence": 62,
+      "x": 320.55,
+      "y": 799.99,
+      "referenceLabel": 63
+    },
+    {
+      "id": "dot-063",
+      "sequence": 63,
+      "x": 343.72,
+      "y": 817.92,
+      "referenceLabel": 64
+    },
+    {
+      "id": "dot-064",
+      "sequence": 64,
+      "x": 363.68,
+      "y": 832.29,
+      "referenceLabel": 65
+    },
+    {
+      "id": "dot-065",
+      "sequence": 65,
+      "x": 354.61,
+      "y": 856.92,
+      "referenceLabel": 66
+    },
+    {
+      "id": "dot-066",
+      "sequence": 66,
+      "x": 314.11,
+      "y": 863.84,
+      "referenceLabel": 67
+    },
+    {
+      "id": "dot-067",
+      "sequence": 67,
+      "x": 262.73,
+      "y": 809.22,
+      "referenceLabel": 68
+    },
+    {
+      "id": "dot-068",
+      "sequence": 68,
+      "x": 277.42,
+      "y": 745.18,
+      "referenceLabel": 69
+    },
+    {
+      "id": "dot-069",
+      "sequence": 69,
+      "x": 333.76,
+      "y": 710.21,
+      "referenceLabel": 70
+    },
+    {
+      "id": "dot-070",
+      "sequence": 70,
+      "x": 395.48,
+      "y": 687.08,
+      "referenceLabel": 71
+    },
+    {
+      "id": "dot-071",
+      "sequence": 71,
+      "x": 433.99,
+      "y": 625.26,
+      "referenceLabel": 72
+    },
+    {
+      "id": "dot-072",
+      "sequence": 72,
+      "x": 437.54,
+      "y": 577.98,
+      "referenceLabel": 73
+    },
+    {
+      "id": "dot-073",
+      "sequence": 73,
+      "x": 378.48,
+      "y": 613.65,
+      "referenceLabel": 74
+    },
+    {
+      "id": "dot-074",
+      "sequence": 74,
+      "x": 331.06,
+      "y": 635.32,
+      "referenceLabel": 75
+    },
+    {
+      "id": "dot-075",
+      "sequence": 75,
+      "x": 275.28,
+      "y": 646.91,
+      "referenceLabel": 76
+    },
+    {
+      "id": "dot-076",
+      "sequence": 76,
+      "x": 220.69,
+      "y": 651.21,
+      "referenceLabel": 77
+    },
+    {
+      "id": "dot-077",
+      "sequence": 77,
+      "x": 177.65,
+      "y": 664.29,
+      "referenceLabel": 78
+    },
+    {
+      "id": "dot-078",
+      "sequence": 78,
+      "x": 178.13,
+      "y": 699.64,
+      "referenceLabel": 79
+    },
+    {
+      "id": "dot-079",
+      "sequence": 79,
+      "x": 205.49,
+      "y": 704.46,
+      "referenceLabel": 80
+    },
+    {
+      "id": "dot-080",
+      "sequence": 80,
+      "x": 233.65,
+      "y": 705.27,
+      "referenceLabel": 81
+    },
+    {
+      "id": "dot-081",
+      "sequence": 81,
+      "x": 239.87,
+      "y": 737.15,
+      "referenceLabel": 82
+    },
+    {
+      "id": "dot-082",
+      "sequence": 82,
+      "x": 201.88,
+      "y": 759.86,
+      "referenceLabel": 83
+    },
+    {
+      "id": "dot-083",
+      "sequence": 83,
+      "x": 148.3,
+      "y": 749.63,
+      "referenceLabel": 84
+    },
+    {
+      "id": "dot-084",
+      "sequence": 84,
+      "x": 119.64,
+      "y": 693.72,
+      "referenceLabel": 85
+    },
+    {
+      "id": "dot-085",
+      "sequence": 85,
+      "x": 132.61,
+      "y": 645.11,
+      "referenceLabel": 86
+    },
+    {
+      "id": "dot-086",
+      "sequence": 86,
+      "x": 169.76,
+      "y": 612.41,
+      "referenceLabel": 87
+    },
+    {
+      "id": "dot-087",
+      "sequence": 87,
+      "x": 228.29,
+      "y": 600.78,
+      "referenceLabel": 88
+    },
+    {
+      "id": "dot-088",
+      "sequence": 88,
+      "x": 280.6,
+      "y": 596.24,
+      "referenceLabel": 89
+    },
+    {
+      "id": "dot-089",
+      "sequence": 89,
+      "x": 239.87,
+      "y": 569.11,
+      "referenceLabel": 90
+    },
+    {
+      "id": "dot-090",
+      "sequence": 90,
+      "x": 218.41,
+      "y": 519.88,
+      "referenceLabel": 91
+    },
+    {
+      "id": "dot-091",
+      "sequence": 91,
+      "x": 203.19,
+      "y": 453.28,
+      "referenceLabel": 92
+    },
+    {
+      "id": "dot-092",
+      "sequence": 92,
+      "x": 173.29,
+      "y": 389.69,
+      "referenceLabel": 93
+    },
+    {
+      "id": "dot-093",
+      "sequence": 93,
+      "x": 109.84,
+      "y": 374.19,
+      "referenceLabel": 94
+    },
+    {
+      "id": "dot-094",
+      "sequence": 94,
+      "x": 76.37,
+      "y": 404.23,
+      "referenceLabel": 95
+    },
+    {
+      "id": "dot-095",
+      "sequence": 95,
+      "x": 86.11,
+      "y": 433.22,
+      "referenceLabel": 96
+    },
+    {
+      "id": "dot-096",
+      "sequence": 96,
+      "x": 100.4,
+      "y": 462.6,
+      "referenceLabel": 97
+    },
+    {
+      "id": "dot-097",
+      "sequence": 97,
+      "x": 61.14,
+      "y": 476.54,
+      "referenceLabel": 98
+    },
+    {
+      "id": "dot-098",
+      "sequence": 98,
+      "x": 24.0,
+      "y": 422.35,
+      "referenceLabel": 99
+    },
+    {
+      "id": "dot-099",
+      "sequence": 99,
+      "x": 39.04,
+      "y": 353.59,
+      "referenceLabel": 100
+    },
+    {
+      "id": "dot-100",
+      "sequence": 100,
+      "x": 98.69,
+      "y": 321.84,
+      "referenceLabel": 101
+    },
+    {
+      "id": "dot-101",
+      "sequence": 101,
+      "x": 168.69,
+      "y": 332.07,
+      "referenceLabel": 102
+    },
+    {
+      "id": "dot-102",
+      "sequence": 102,
+      "x": 226.09,
+      "y": 372.31,
+      "referenceLabel": 103
+    },
+    {
+      "id": "dot-103",
+      "sequence": 103,
+      "x": 250.6,
+      "y": 441.14,
+      "referenceLabel": 104
+    },
+    {
+      "id": "dot-104",
+      "sequence": 104,
+      "x": 264.89,
+      "y": 510.0,
+      "referenceLabel": 105
+    },
+    {
+      "id": "dot-105",
+      "sequence": 105,
+      "x": 287.81,
+      "y": 543.07,
+      "referenceLabel": 106
+    },
+    {
+      "id": "dot-106",
+      "sequence": 106,
+      "x": 332.44,
+      "y": 522.87,
+      "referenceLabel": 107
+    },
+    {
+      "id": "dot-107",
+      "sequence": 107,
+      "x": 363.73,
+      "y": 484.53,
+      "referenceLabel": 108
+    }
+  ]
+}
