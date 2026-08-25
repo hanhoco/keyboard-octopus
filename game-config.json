@@ -23,5 +23,5 @@
     "the page; there is nothing to rebuild."
   ],
 
-  "ignore": []
+  "ignore": ["^"]
 }
