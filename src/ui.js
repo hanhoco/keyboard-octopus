@@ -86,6 +86,38 @@ export function resolveSetup({ measured, url = {}, remembered = {}, known }) {
   };
 }
 
+/**
+ * Which combinations cost the most time, worst first.
+ *
+ * Grouped by the combination rather than by dot, and averaged, because the
+ * same keys come round several times and one unlucky dot proves nothing. The
+ * attempt count rides along: it is usually the reason a combination was slow,
+ * and it is what a teacher acts on next lesson.
+ */
+export function slowestCombinations(records, limit = 3) {
+  const byLabel = new Map();
+  for (const r of records) {
+    const e = byLabel.get(r.label) ?? { total: 0, tries: 0, count: 0 };
+    e.total += r.ms;
+    e.tries += r.tries;
+    e.count += 1;
+    byLabel.set(r.label, e);
+  }
+  return [...byLabel.entries()]
+    .map(([label, e]) => ({
+      label, count: e.count, tries: e.tries,
+      seconds: e.total / e.count / 1000,
+    }))
+    .sort((a, b) => b.seconds - a.seconds)
+    .slice(0, limit);
+}
+
+/** m:ss, for a clock a seven-year-old reads across the room. */
+export function formatClock(ms) {
+  const total = Math.max(0, Math.round(ms / 1000));
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
 export function startUI(initialData) {
   let data = initialData;
   let game, layouts;
@@ -93,6 +125,8 @@ export function startUI(initialData) {
   let chips = [];                 // [modifier flag, chip node]
   let lastMeasured = null;        // what the machine reported last time we looked
   let rechecking = false;
+  let run = null;                 // the timed challenge, null while playing freely
+  let dotStartedAt = 0;           // when the current dot became the one to solve
 
   // the raw config is needed again if the student switches platform
   const layoutsPromise = fetch('keyboard-layouts.json').then(r => r.json());
@@ -114,7 +148,17 @@ export function startUI(initialData) {
     $('platform').addEventListener('change', e => {
       switchConfig({ platformId: e.target.value });
     });
-    $('restart').addEventListener('click', () => { build(); $('restart').blur(); });
+    $('restart').addEventListener('click', () => {
+      cancelChallenge();
+      build();
+      $('restart').blur();
+    });
+    for (const b of $('chal').querySelectorAll('button')) {
+      b.addEventListener('click', () => {
+        startChallenge(Number(b.dataset.min));
+        b.blur();
+      });
+    }
 
     /* Windows can hold several layouts at once and swap them mid-game with
        Win+Space or Alt+Shift — and Alt and Shift are keys this game asks for
@@ -225,7 +269,9 @@ export function startUI(initialData) {
     setStatus('', '');
     $('hint').hidden = true;
     $('layoutWarn').hidden = data.layoutConfirmed !== false;
+    $('report').hidden = true;
     resetLive();
+    dotStartedAt = now();
     updateProgress();
   }
 
@@ -441,9 +487,121 @@ export function startUI(initialData) {
     $('liveTech').textContent = `key "${e.key}" \u00b7 code ${e.code}`;
   }
 
+  /* ---------------------------------------------------------- challenge -- */
+
+  const now = () => performance.now();
+
+  function stopClock() {
+    if (!run) return;
+    clearTimeout(run.timer);
+    clearInterval(run.timer);
+    run.timer = null;
+  }
+
+  function cancelChallenge() {
+    stopClock();
+    run = null;
+    $('clock').hidden = true;
+    $('clock').classList.remove('low');
+    for (const b of $('chal').querySelectorAll('button')) {
+      b.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  /**
+   * A round always starts on a clean octopus. Two children who began at
+   * different dots did different work, so their scores would not be
+   * comparable — and comparing them is the whole point of a class challenge.
+   */
+  function startChallenge(minutes) {
+    cancelChallenge();
+    run = { minutes, records: [], phase: 'countdown', endsAt: 0, timer: null };
+    build();
+    for (const b of $('chal').querySelectorAll('button')) {
+      b.setAttribute('aria-pressed', String(Number(b.dataset.min) === minutes));
+    }
+    $('clock').hidden = false;
+    $('clock').textContent = formatClock(minutes * 60000);
+    countIn(3);
+  }
+
+  /* Hands reach the keyboard before the clock runs. Without this the round
+     eats the first seconds while a child is still finding the keys. */
+  function countIn(n) {
+    if (!run || run.phase !== 'countdown') return;
+    if (n > 0) {
+      setStatus(`Ready… ${n}`, 'good');
+      run.timer = setTimeout(() => countIn(n - 1), 1000);
+      return;
+    }
+    setStatus('Go!', 'good');
+    run.phase = 'running';
+    run.endsAt = now() + run.minutes * 60000;
+    dotStartedAt = now();
+    run.timer = setInterval(tick, 200);
+  }
+
+  function tick() {
+    if (!run || run.phase !== 'running') return;
+    const left = run.endsAt - now();
+    const c = $('clock');
+    c.textContent = formatClock(left);
+    c.classList.toggle('low', left <= 10000);
+    if (left <= 0) endChallenge('time');
+  }
+
+  function endChallenge(reason) {
+    if (!run || run.phase === 'over') return;
+    stopClock();
+    run.phase = 'over';
+    const spent = run.minutes * 60000 - Math.max(0, run.endsAt - now());
+    $('clock').textContent = formatClock(reason === 'time' ? 0 : run.endsAt - now());
+    $('clock').classList.toggle('low', reason === 'time');
+    renderReport(reason, spent);
+    hideActiveMarkers();
+  }
+
+  function renderReport(reason, spent) {
+    const p = game.progress();
+    const s = game.summary();
+    const finished = reason === 'finished';
+
+    $('reportTitle').textContent = finished ? 'Octopus complete!' : 'Time is up';
+    $('scoreDots').textContent = finished ? formatClock(spent) : p.completed;
+    $('scoreDots').nextElementSibling.textContent = finished
+      ? `to join all ${p.total} dots`
+      : `of ${p.total} dots joined`;
+    $('scoreSub').textContent =
+      `${Math.round(s.accuracy * 100)}% first try · ${run.minutes} minute round`;
+
+    const slow = slowestCombinations(run.records, 3);
+    const wrap = $('slowWrap');
+    wrap.replaceChildren();
+    if (!slow.length) return;
+
+    const head = document.createElement('div');
+    head.className = 'slowHead';
+    head.textContent = 'Slowest combinations';
+    wrap.appendChild(head);
+
+    for (const c of slow) {
+      const row = document.createElement('div');
+      row.className = 'slowRow';
+      const k = document.createElement('kbd');
+      k.textContent = c.label;
+      const t = document.createElement('em');
+      t.textContent = `${c.seconds.toFixed(1)}s` +
+        (c.tries ? ` · ${c.tries} wrong` : '');
+      row.append(k, t);
+      wrap.appendChild(row);
+    }
+    $('report').hidden = false;
+  }
+
   /* -------------------------------------------------------------- input -- */
 
   function onKey(e) {
+    if (run && run.phase !== 'running') return; // counting in, or the round is over
     if (e.repeat) return;                       // holding a key is one attempt
     if (MODIFIER_KEYS.has(e.key)) return;       // Shift alone is not a wrong answer
     if (shouldPassThrough(e, layouts, data.platformId)) return;
@@ -459,6 +617,14 @@ export function startUI(initialData) {
 
     if (r.correct) {
       const viaDeadKey = e.key === 'Dead' && solving?.challenge.expected.dead;
+      if (run?.phase === 'running' && solving) {
+        run.records.push({
+          label: solving.challenge.expected.label,
+          ms: now() - dotStartedAt,
+          tries: r.attempts,
+        });
+      }
+      dotStartedAt = now();
       drawSegments(r.segments);
       renderStep();
       updateProgress();
@@ -467,7 +633,10 @@ export function startUI(initialData) {
                      `press Space next and the ${solving.challenge.target} appears.`
                    : (r.attempts === 0 ? 'Yes!' : 'Got it.'), 'good');
       showHint(null);
-      if (r.completedAll) onComplete();
+      if (r.completedAll) {
+        onComplete();
+        if (run?.phase === 'running') endChallenge('finished');
+      }
     } else {
       setStatus('Not that one — try again.', 'bad');
       recheckLayout();          // a wrong answer is when a swapped layout shows

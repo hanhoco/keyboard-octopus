@@ -111,6 +111,33 @@
                word-break:break-word; }
   .meta { font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; }
   .warn { border-left:3px solid var(--active); font-size:13px; color:var(--muted); }
+
+  /* --- challenge ---------------------------------------------------------- */
+  .chal { display:inline-flex; gap:4px; }
+  .chal button { font:inherit; font-size:13px; padding:5px 10px; border-radius:7px;
+                 border:1px solid var(--border); background:var(--panel); color:var(--ink);
+                 cursor:pointer; }
+  .chal button:hover { border-color:var(--accent); color:var(--accent); }
+  .chal button[aria-pressed="true"] { background:var(--accent); border-color:var(--accent);
+                                      color:#fff; }
+  .clock { font:700 20px/1 ui-monospace,monospace; font-variant-numeric:tabular-nums;
+           padding:2px 10px; border-radius:8px; background:var(--panel);
+           border:1px solid var(--border); white-space:nowrap; }
+  .clock.low { color:#fff; background:var(--bad); border-color:var(--bad); }
+  .report { border-top:4px solid var(--active); }
+  .score { margin:8px 0 2px; font:600 15px/1.2 ui-sans-serif,system-ui,sans-serif; }
+  .score b { font:700 44px/1 ui-monospace,monospace; font-variant-numeric:tabular-nums;
+             display:block; color:var(--active); }
+  .scoreSub { font-size:13px; color:var(--muted); margin-bottom:12px; }
+  .slowWrap { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+  .slowHead { font:600 11px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.09em;
+              text-transform:uppercase; color:var(--muted); }
+  .slowRow { display:flex; justify-content:space-between; gap:10px; align-items:baseline;
+             font-size:14px; border-bottom:1px solid var(--border); padding-bottom:4px; }
+  .slowRow kbd { font:600 13px/1 ui-monospace,monospace; background:rgba(128,128,128,.16);
+                 padding:3px 6px; border-radius:5px; }
+  .slowRow em { font-style:normal; color:var(--muted); font-size:12px;
+                font-variant-numeric:tabular-nums; white-space:nowrap; }
   .warn b { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
             color:var(--ink); margin-bottom:2px; }
   .warn b + b { display:inline; font-size:inherit; letter-spacing:0; text-transform:none;
@@ -132,6 +159,13 @@
       <option value="windows">Ctrl (Windows / Linux)</option>
       <option value="mac">Cmd (macOS)</option>
     </select>
+    <span class="count" id="chalLabel">Challenge</span>
+    <span class="chal" id="chal">
+      <button type="button" data-min="1">1 min</button>
+      <button type="button" data-min="3">3 min</button>
+      <button type="button" data-min="5">5 min</button>
+    </span>
+    <span class="clock" id="clock" hidden>0:00</span>
     <button id="restart" type="button">Restart</button>
   </header>
 
@@ -151,6 +185,13 @@
         <div class="live-tech" id="liveTech">Press any key.</div>
       </div>
       <div class="card hint" id="hint" hidden></div>
+      <div class="card report" id="report" hidden>
+        <div class="label" id="reportTitle">Time is up</div>
+        <div class="score"><b id="scoreDots">0</b> <span>dots joined</span></div>
+        <div class="scoreSub" id="scoreSub"></div>
+        <div class="slowWrap" id="slowWrap"></div>
+        <div class="ask">Read these numbers to your teacher.</div>
+      </div>
       <div class="card warn" id="layoutWarn" hidden>
         <b>Check the keyboard</b>
         This browser will not say which keyboard this computer has, so the key
