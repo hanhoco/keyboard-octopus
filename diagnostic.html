@@ -93,6 +93,16 @@
   </div>
 
   <div class="card">
+    <h2>Screenshot keys &mdash; can the browser see them?</h2>
+    <p class="note" style="margin:0 0 12px">Windows usually takes these before any
+       web page can see them. Press each one here and find out on THIS computer.
+       Nothing is trapped: your screenshot still happens.</p>
+    <table><thead><tr><th>Press</th><th>Takes</th><th>Does the browser see it?</th></tr></thead>
+      <tbody id="shotRows"></tbody></table>
+    <div class="note" id="shotNote"></div>
+  </div>
+
+  <div class="card">
     <h2>Live key reader</h2>
     <div class="box" id="box">
       <div class="big" id="ch">Press any key</div>
@@ -225,6 +235,36 @@ function mark(ch) {
   writeReport();
 }
 
+/* --------------------------------------------- the screenshot combos ---- */
+
+/* Windows claims these at the system level. Whether anything reaches the page
+   is a fact about this machine, not something to assume from a spec. */
+const SHOTS = [
+  { id:'snip', press:'Win + Shift + S', takes:'part of the screen',
+    hit:e => e.code === 'KeyS' && e.metaKey && e.shiftKey },
+  { id:'prt',  press:'PrtScn', takes:'the whole screen',
+    hit:e => e.key === 'PrintScreen' },
+];
+const shotSeen = {};
+
+$('shotRows').innerHTML = SHOTS.map(s => `
+  <tr><td class="k">${s.press}</td><td class="wait">${s.takes}</td>
+      <td id="s-${s.id}" class="wait">not tried yet</td></tr>`).join('');
+
+function checkShot(e) {
+  for (const s of SHOTS) {
+    if (shotSeen[s.id] || !s.hit(e)) continue;
+    shotSeen[s.id] = e.type;
+    const cell = $('s-' + s.id);
+    cell.textContent = `yes, on ${e.type}`;
+    cell.className = 'ok';
+    $('shotNote').textContent =
+      'A "yes" means the game could be taught this combination. A row that ' +
+      'never turns green means Windows keeps it and no web page can check it.';
+    writeReport();
+  }
+}
+
 /* --------------------------------------------------------------- keys -- */
 
 const MODS = [['shiftKey','Shift'], ['ctrlKey','Ctrl'], ['altKey','Alt'], ['metaKey','Win']];
@@ -234,6 +274,7 @@ const chipNodes = [...$('chips').children];
 let lastSeen = [];
 
 function onKey(e) {
+  checkShot(e);
   MODS.forEach(([flag], i) => chipNodes[i].classList.toggle('on', !!e[flag]));
   if (e.type !== 'keydown' || e.repeat) return;
 
@@ -272,6 +313,10 @@ function writeReport() {
     ...(mapPairs.length
       ? mapPairs.map(([c, ch]) => `  ${c.padEnd(15)} -> ${ch === null ? '(none)' : ch}`)
       : ['  (this browser does not report them)']),
+    '',
+    'Screenshot keys:',
+    ...SHOTS.map(s => `  ${s.press.padEnd(16)} ${shotSeen[s.id]
+      ? 'SEEN on ' + shotSeen[s.id] : 'not seen / not tried'}`),
     '',
     'Characters produced here:',
     ...CHARS.map(c => `  ${c}  ${found[c] ? 'YES' : 'not tried / not possible'}`),
