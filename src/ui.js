@@ -6,7 +6,7 @@
  * line to draw comes back from game.submit().
  */
 import { createGame, PLAYING, COMPLETE } from './game.js';
-import { joinGameData } from './data.js';
+import { joinGameData, detectLayout } from './data.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs = {}) => {
@@ -91,6 +91,8 @@ export function startUI(initialData) {
   let game, layouts;
   let refs = {};
   let chips = [];                 // [modifier flag, chip node]
+  let lastMeasured = null;        // what the machine reported last time we looked
+  let rechecking = false;
 
   // the raw config is needed again if the student switches platform
   const layoutsPromise = fetch('keyboard-layouts.json').then(r => r.json());
@@ -113,6 +115,14 @@ export function startUI(initialData) {
       switchConfig({ platformId: e.target.value });
     });
     $('restart').addEventListener('click', () => { build(); $('restart').blur(); });
+
+    /* Windows can hold several layouts at once and swap them mid-game with
+       Win+Space or Alt+Shift — and Alt and Shift are keys this game asks for
+       constantly. Measuring once at load is therefore not enough: the child
+       flips the keyboard by accident and every hint silently goes stale. */
+    lastMeasured = data.layoutConfirmed ? data.layoutId : null;
+    navigator.keyboard?.addEventListener?.('layoutchange', recheckLayout);
+    window.addEventListener('focus', recheckLayout);
     window.addEventListener('keydown', onKey, { capture: true });
     // Separate from onKey on purpose: the readout must also see the keys the
     // game ignores — modifiers on their own, and browser pass-throughs.
@@ -149,6 +159,25 @@ export function startUI(initialData) {
     try { localStorage.removeItem(STORE); } catch { /* nothing to forget */ }
   }
 
+  /**
+   * Has the keyboard changed under us? Only a genuine change is acted on: if
+   * the machine still reports what it reported before, a teacher's own choice
+   * is left alone.
+   */
+  async function recheckLayout() {
+    if (rechecking) return;
+    rechecking = true;
+    try {
+      const now = await detectLayout(layouts, navigator);
+      if (now && now !== lastMeasured) {
+        lastMeasured = now;
+        if (now !== data.layoutId) switchConfig({ layoutId: now, announce: true });
+      }
+    } finally {
+      rechecking = false;
+    }
+  }
+
   function fillLayoutMenu() {
     const sel = $('layout');
     sel.replaceChildren();
@@ -160,26 +189,33 @@ export function startUI(initialData) {
     }
   }
 
-  function switchConfig({ layoutId, platformId }) {
+  function switchConfig({ layoutId, platformId, keepProgress = true,
+                          confirmed = true, announce = false }) {
     const lid = layoutId ?? data.layoutId;
     const pid = platformId ?? data.platformId;
     Promise.all([
       fetch('octopus-path-LOCKED.json').then(r => r.json()),
       fetch('keyboard-curriculum.json').then(r => r.json()),
     ]).then(([geometry, curriculum]) => {
+      const resume = keepProgress ? game.state : null;
       data = joinGameData({ geometry, curriculum, layouts, layoutId: lid, platformId: pid });
-      data.layoutConfirmed = true;          // chosen by a human beats measured
+      data.layoutConfirmed = confirmed;
       try { localStorage.setItem(STORE, JSON.stringify({ layoutId: lid, platformId: pid })); }
       catch { /* a locked-down school profile is not a reason to stop playing */ }
-      build();
+      build(resume);
+      if (announce) {
+        setStatus(`Your keyboard changed to ${data.layoutName}. The keys below ` +
+                  `now match it.`, 'good');
+      }
     });
   }
 
   /* ------------------------------------------------------------- render -- */
 
-  function build() {
-    game = createGame(data, layouts);
+  function build(resume = null) {
+    game = createGame(data, layouts, { resume });
     refs = drawBoard(data);
+    if (resume) replayEarnedSegments();
     $('layout').value = data.layoutId;
     $('platform').value = data.platformId;
     $('layoutName').textContent = `${data.layoutName} · ${data.platformName}`;
@@ -306,6 +342,18 @@ export function startUI(initialData) {
     refs.badgeText.textContent = '';
   }
 
+  /* After a rebuild the SVG is empty again, so the lines a child already won
+     are drawn back from the run itself. Which dots are joined is a fact about
+     progress, never about the keyboard. */
+  function replayEarnedSegments() {
+    const done = game.state.completedDots;
+    const pairs = done.filter(seq => seq > 1).map(seq => [seq - 1, seq]);
+    if (game.state.status === COMPLETE && data.closed) {
+      pairs.push([data.steps[data.steps.length - 1].sequence, 1]);
+    }
+    drawSegments(pairs);
+  }
+
   function drawSegments(pairs) {
     const bySeq = new Map(data.steps.map(s => [s.sequence, s.position]));
     for (const [a, b] of pairs) {
@@ -420,6 +468,7 @@ export function startUI(initialData) {
       if (r.completedAll) onComplete();
     } else {
       setStatus('Not that one — try again.', 'bad');
+      recheckLayout();          // a wrong answer is when a swapped layout shows
       const card = $('challengeCard');
       card.classList.remove('shake');
       void card.offsetWidth;                    // restart the animation

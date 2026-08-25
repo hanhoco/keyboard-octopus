@@ -13,10 +13,13 @@ import { matchesExpected } from './data.js';
 export const PLAYING = 'playing';
 export const COMPLETE = 'complete';
 
-export function createGame(data, layouts, { hintsEnabled = true } = {}) {
+export function createGame(data, layouts, { hintsEnabled = true, resume = null } = {}) {
   if (!data?.steps?.length) throw new Error('createGame: no steps');
 
-  const state = {
+  // `resume` carries a run across a rebuild. Windows can switch keyboard
+  // layout under our feet with Win+Space, and re-labelling the challenges
+  // must not cost a child the dots they already earned.
+  const state = resume ? { ...resume } : {
     currentSequence: 1,
     completedDots: [],          // sequences, in the order they were solved
     attempts: {},               // sequence -> wrong attempts on that dot
