@@ -215,6 +215,16 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
           `sequence ${c.sequence}: target "${c.target}" cannot be named on ` +
           `layout "${lid}" — rebuild the curriculum for this layout`);
       }
+      /* A "what does this type?" challenge PRINTS a combination on screen, and
+         the curriculum stores that text — written once, in US QWERTY. Shown
+         unchanged to a Latin American keyboard it reads "Shift + 2" for @,
+         which there produces a quote mark. The child does exactly as told and
+         is marked wrong. The combination must come from the layout, like
+         every other combination this game names. */
+      const prompt = c.challengeType === 'combination-recall'
+        ? expected.label
+        : c.prompt;
+
       return {
         sequence: dot.sequence,
         // straight from the geometry file, untouched
@@ -223,7 +233,7 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
         referenceLabel: dot.referenceLabel,
         // straight from the curriculum file, plus layout-derived presentation
         challenge: {
-          prompt: c.prompt,
+          prompt,
           challengeType: c.challengeType,
           difficulty: c.difficulty,
           target: c.target,
