@@ -144,6 +144,12 @@ const KEY_POSITION = {
   Slash:         'three keys to the right of the M',
 };
 
+/** What the card shows when the curriculum's own wording no longer applies. */
+function promptFor(challengeType, target, expected) {
+  if (challengeType === 'combination-recall') return expected.label;
+  return target;                       // the symbol, or the name of the action
+}
+
 /* -------------------------------------------------------------------- hints */
 
 const MODIFIER_HINT = {
@@ -182,7 +188,24 @@ export class JoinError extends Error {}
  * Pure join. Takes already-parsed JSON so it is trivially testable and can
  * never depend on how the files were fetched.
  */
-export function joinGameData({ geometry, curriculum, layouts, layoutId, platformId }) {
+/**
+ * Every target the curriculum uses, grouped by kind of challenge.
+ * Used both to replace an ignored target and to reroll one on Skip.
+ */
+function targetsByType(curriculum, allowed) {
+  const byType = new Map();
+  for (const c of curriculum.challenges) {
+    if (!allowed(c.target)) continue;
+    const list = byType.get(c.challengeType) ?? [];
+    if (!list.includes(c.target)) list.push(c.target);
+    byType.set(c.challengeType, list);
+  }
+  for (const list of byType.values()) list.sort();
+  return byType;
+}
+
+export function joinGameData({ geometry, curriculum, layouts, layoutId, platformId,
+                               config }) {
   const lid = layoutId ?? layouts.defaultLayout;
   const pid = platformId ?? layouts.defaultPlatform;
   if (!layouts.layouts[lid]) throw new JoinError(`unknown layout "${lid}"`);
@@ -203,16 +226,37 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
   }
 
   const policy = curriculum.meta.hintPolicy;
+
+  /* A target the classroom asked us not to use. The dot stays exactly where it
+     is — the geometry is locked — and is handed a different question of the
+     same kind, so the octopus is drawn identically either way. */
+  const ignored = new Set(config?.ignore ?? []);
+  const allowed = t => !ignored.has(t);
+  const pool = targetsByType(curriculum, allowed);
+  if (![...pool.values()].some(list => list.length)) {
+    throw new JoinError('every challenge is on the ignore list; nothing left to ask');
+  }
+  let swapped = 0;
+
   const steps = [...geometry.dots]
     .sort((a, b) => a.sequence - b.sequence)
     .map(dot => {
       const c = bySequence.get(dot.sequence);
       if (!c) throw new JoinError(`no challenge for dot sequence ${dot.sequence}`);
 
-      const expected = resolveExpectedInput(layouts, lid, pid, c.target);
+      let target = c.target;
+      if (ignored.has(target)) {
+        // Deterministic, so the same settings always give the same octopus.
+        const choices = pool.get(c.challengeType)?.length
+          ? pool.get(c.challengeType)
+          : [...pool.values()].find(l => l.length);
+        target = choices[swapped++ % choices.length];
+      }
+
+      const expected = resolveExpectedInput(layouts, lid, pid, target);
       if (!expected) {
         throw new JoinError(
-          `sequence ${c.sequence}: target "${c.target}" cannot be named on ` +
+          `sequence ${c.sequence}: target "${target}" cannot be named on ` +
           `layout "${lid}" — rebuild the curriculum for this layout`);
       }
       /* A "what does this type?" challenge PRINTS a combination on screen, and
@@ -223,7 +267,7 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
          every other combination this game names. */
       const prompt = c.challengeType === 'combination-recall'
         ? expected.label
-        : c.prompt;
+        : (target === c.target ? c.prompt : promptFor(c.challengeType, target, expected));
 
       return {
         sequence: dot.sequence,
@@ -236,15 +280,33 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
           prompt,
           challengeType: c.challengeType,
           difficulty: c.difficulty,
-          target: c.target,
+          target,
           expected,
           hints: buildHints(layouts, pid, expected, policy),
         },
       };
     });
 
+  /* Everything Skip is allowed to offer instead, resolved once for this
+     keyboard. Kept off the steps themselves: one entry per target, not per dot. */
+  const alternatives = {};
+  for (const [type, targets] of pool) {
+    alternatives[type] = targets.map(t => {
+      const e = resolveExpectedInput(layouts, lid, pid, t);
+      return e && {
+        target: t,
+        prompt: type === 'combination-recall' ? e.label : promptFor(type, t, e),
+        challengeType: type,
+        expected: e,
+        hints: buildHints(layouts, pid, e, policy),
+      };
+    }).filter(Boolean);
+  }
+
   return {
     canvas: geometry.meta.canvas,
+    alternatives,
+    ignored: [...ignored],
     face: geometry.meta.face,
     closed: geometry.meta.closed === true,
     layoutId: lid,
@@ -264,6 +326,21 @@ const FILES = {
   layouts:    'keyboard-layouts.json',
 };
 
+/**
+ * The classroom's own settings. Optional on purpose: a missing or malformed
+ * file must never stop a lesson, so it degrades to "ignore nothing".
+ */
+export async function loadConfig(base = '') {
+  try {
+    const res = await fetch(`${base}game-config.json`);
+    if (!res.ok) return { ignore: [] };
+    const cfg = await res.json();
+    return { ignore: Array.isArray(cfg?.ignore) ? cfg.ignore : [] };
+  } catch {
+    return { ignore: [] };
+  }
+}
+
 export async function loadGameData({ layoutId, platformId, base = '' } = {}) {
   const [geometry, curriculum, layouts] = await Promise.all(
     Object.values(FILES).map(async f => {
@@ -272,9 +349,10 @@ export async function loadGameData({ layoutId, platformId, base = '' } = {}) {
       return res.json();
     }));
   const nav = globalThis.navigator;
+  const config = await loadConfig(base);
   const measured = layoutId ? null : await detectLayout(layouts, nav);
   const data = joinGameData({
-    geometry, curriculum, layouts,
+    geometry, curriculum, layouts, config,
     layoutId: layoutId ?? measured ?? undefined,
     platformId: platformId ?? detectPlatform(layouts, nav),
   });

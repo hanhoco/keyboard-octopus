@@ -1,0 +1,27 @@
+{
+  "$comment": [
+    "Things this classroom does not want the game to ask for.",
+    "",
+    "Put a target in `ignore` and no dot will ever ask for it. The octopus does",
+    "NOT lose that dot — the geometry is locked at 107 and never moves. The dot",
+    "is given a different challenge of the same kind instead, so the drawing is",
+    "identical and only the question changes.",
+    "",
+    "WHAT TO WRITE. Exactly what the game asks for:",
+    "  a character   \"^\"  \"<\"  \">\"  \"@\"  \"~\"  \"{\"  \"}\"  \"|\"",
+    "  a shortcut    \"COPY\"  \"PASTE\"  \"CUT\"  \"UNDO\"  \"REDO\"  \"SAVE\"",
+    "                \"FIND\"  \"BOLD\"  \"SELECT ALL\"",
+    "",
+    "WHEN YOU WANT THIS.",
+    "  - The key does not exist on your keyboards. A US (ANSI) board has no key",
+    "    between Left Shift and Z, so < and > cannot be typed on it at all.",
+    "  - The combination fights something else on your machines, or the class is",
+    "    not ready for it yet.",
+    "  - You want a shorter, easier round for younger children.",
+    "",
+    "Leave the list empty to play the full curriculum. Save the file and reload",
+    "the page; there is nothing to rebuild."
+  ],
+
+  "ignore": []
+}

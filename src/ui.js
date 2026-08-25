@@ -6,7 +6,7 @@
  * line to draw comes back from game.submit().
  */
 import { createGame, PLAYING, COMPLETE } from './game.js';
-import { joinGameData, detectLayout } from './data.js';
+import { joinGameData, detectLayout, loadConfig } from './data.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs = {}) => {
@@ -143,6 +143,9 @@ export function startUI(initialData) {
 
   // the raw config is needed again if the student switches platform
   const layoutsPromise = fetch('keyboard-layouts.json').then(r => r.json());
+  const configPromise = loadConfig();          // what this classroom asked us to skip
+  let config = { ignore: [] };
+  configPromise.then(c => { config = c; });
 
   layoutsPromise.then(cfg => {
     layouts = cfg;
@@ -165,6 +168,15 @@ export function startUI(initialData) {
       cancelChallenge();
       build();
       $('restart').blur();
+    });
+    $('skip').addEventListener('click', () => {
+      const r = game.skip();
+      $('skip').blur();
+      if (!r.skipped) { setStatus('There is nothing else to ask here.', 'bad'); return; }
+      renderStep();
+      setStatus('New one. That dot is still waiting.', '');
+      showHint(null);
+      dotStartedAt = now();
     });
     for (const b of $('chal').querySelectorAll('button')) {
       b.addEventListener('click', () => {
@@ -257,7 +269,8 @@ export function startUI(initialData) {
       fetch('keyboard-curriculum.json').then(r => r.json()),
     ]).then(([geometry, curriculum]) => {
       const resume = keepProgress ? game.state : null;
-      data = joinGameData({ geometry, curriculum, layouts, layoutId: lid, platformId: pid });
+      data = joinGameData({ geometry, curriculum, layouts, config,
+                            layoutId: lid, platformId: pid });
       data.layoutConfirmed = confirmed;
       try { localStorage.setItem(STORE, JSON.stringify({ layoutId: lid, platformId: pid })); }
       catch { /* a locked-down school profile is not a reason to stop playing */ }
@@ -356,6 +369,7 @@ export function startUI(initialData) {
 
     const step = game.currentStep();
     if (!step) { hideActiveMarkers(); return; }
+    $('skip').hidden = false;
 
     const { x, y } = step.position;
     refs.gHalo.setAttribute('cx', x);
@@ -398,6 +412,7 @@ export function startUI(initialData) {
   }
 
   function hideActiveMarkers() {
+    $('skip').hidden = true;
     refs.gHalo.setAttribute('cx', -100);
     refs.badgeRect.setAttribute('x', -300);
     refs.badgeText.textContent = '';
@@ -585,7 +600,8 @@ export function startUI(initialData) {
       ? `to join all ${p.total} dots`
       : `of ${p.total} dots joined`;
     $('scoreSub').textContent =
-      `${Math.round(s.accuracy * 100)}% first try · ${run.minutes} minute round`;
+      `${Math.round(s.accuracy * 100)}% first try · ${run.minutes} minute round` +
+      (s.skips ? ` · ${s.skips} skipped` : '');
 
     const again = document.createElement('button');
     again.type = 'button';

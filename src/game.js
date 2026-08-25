@@ -24,21 +24,33 @@ export function createGame(data, layouts, { hintsEnabled = true, resume = null }
     completedDots: [],          // sequences, in the order they were solved
     attempts: {},               // sequence -> wrong attempts on that dot
     hintsUsed: {},              // sequence -> how many hint tiers were shown
+    swaps: {},                  // sequence -> the challenge Skip put there instead
+    rerolls: {},                // sequence -> how many times Skip was pressed on it
+    skips: 0,
     totalCorrect: 0,
     totalWrong: 0,
     status: PLAYING,
   };
 
   const stepBySeq = new Map(data.steps.map(s => [s.sequence, s]));
+
+  /* A dot never moves, but Skip can change the question standing on it. The
+     swap lives in the run, not in the data, so the same data can be replayed. */
+  function stepAt(sequence) {
+    const step = stepBySeq.get(sequence);
+    if (!step) return null;
+    const swap = state.swaps[sequence];
+    return swap ? { ...step, challenge: swap } : step;
+  }
   const total = data.steps.length;
   const last = data.steps[data.steps.length - 1].sequence;
 
-  const currentStep = () => stepBySeq.get(state.currentSequence) ?? null;
+  const currentStep = () => stepAt(state.currentSequence);
 
   /** Highest hint tier earned by the wrong attempts made on the current dot. */
   function hintFor(sequence = state.currentSequence) {
     if (!hintsEnabled) return null;
-    const step = stepBySeq.get(sequence);
+    const step = stepAt(sequence);
     if (!step) return null;
     const tries = state.attempts[sequence] ?? 0;
     const earned = step.challenge.hints.filter(h => tries >= h.afterAttempts);
@@ -111,9 +123,34 @@ export function createGame(data, layouts, { hintsEnabled = true, resume = null }
     };
   }
 
+  /**
+   * Ask something else on this same dot.
+   *
+   * Not "move on": the dot stays unsolved and the octopus keeps all 107 of
+   * them. A child stuck on a combination their keyboard cannot make gets a
+   * different question rather than a wall. Repeated presses walk through the
+   * alternatives instead of landing on the same one twice.
+   */
+  function skip() {
+    if (state.status === COMPLETE) return { skipped: false, reason: 'complete' };
+    const seq = state.currentSequence;
+    // Built from the dot's ORIGINAL question, so pressing Skip again walks on
+    // instead of circling back to the one just refused.
+    const original = stepBySeq.get(seq);
+    const pool = data.alternatives?.[original.challenge.challengeType] ?? [];
+    const others = pool.filter(c => c.target !== original.challenge.target);
+    if (!others.length) return { skipped: false, reason: 'nothing else to ask' };
+
+    const n = state.rerolls[seq] ?? 0;
+    state.rerolls[seq] = n + 1;
+    state.swaps[seq] = others[n % others.length];
+    state.skips += 1;
+    return { skipped: true, sequence: seq, challenge: state.swaps[seq] };
+  }
+
   /** Everything the student practised — for the completion screen. */
   function summary() {
-    const solved = state.completedDots.map(s => stepBySeq.get(s));
+    const solved = state.completedDots.map(s => stepAt(s));
     const byType = {}, targets = new Set(), families = new Set();
     for (const s of solved) {
       byType[s.challenge.challengeType] = (byType[s.challenge.challengeType] ?? 0) + 1;
@@ -129,9 +166,10 @@ export function createGame(data, layouts, { hintsEnabled = true, resume = null }
       modifierFamilies: [...families],
       wrongAttempts: attempts,
       hintsUsed: Object.values(state.hintsUsed).reduce((a, b) => a + b, 0),
+      skips: state.skips,
       accuracy: state.totalCorrect / Math.max(1, state.totalCorrect + state.totalWrong),
     };
   }
 
-  return { state, submit, currentStep, hintFor, progress, summary, total };
+  return { state, submit, skip, currentStep, hintFor, progress, summary, total };
 }
