@@ -83,6 +83,7 @@ export function resolveExpectedInput(layouts, layoutId, platformId, target) {
     region: char.region,
     dead: char.dead === true,
     code: char.code,
+    where: KEY_POSITION[char.code] ?? null,
     label: combinationLabel(layouts, platformId, char.modifiers, char.baseKey),
   };
 }
@@ -120,6 +121,29 @@ export function matchesExpected(expected, event, layouts, platformId) {
     && (event.ctrlKey !== true || isAltGr(event));
 }
 
+/**
+ * Where a key SITS, for the keys whose printing cannot be trusted.
+ *
+ * A Spanish-printed keyboard running a US layout has no key marked ";" — that
+ * one is painted Ñ — so "Shift + ;" is true and unfollowable at the same time.
+ * Letters and digits are painted the same the world over and need no help.
+ * Everything else is described by where it is, which no paint can contradict.
+ */
+const KEY_POSITION = {
+  Backquote:     'the key to the left of the 1',
+  Minus:         'the key to the right of the 0',
+  Equal:         'two keys to the right of the 0',
+  BracketLeft:   'the key to the right of the P',
+  BracketRight:  'two keys to the right of the P',
+  Backslash:     'the key just above Enter',
+  Semicolon:     'the key to the right of the L',
+  Quote:         'two keys to the right of the L',
+  IntlBackslash: 'the key to the left of the Z',
+  Comma:         'the key to the right of the M',
+  Period:        'two keys to the right of the M',
+  Slash:         'three keys to the right of the M',
+};
+
 /* -------------------------------------------------------------------- hints */
 
 const MODIFIER_HINT = {
@@ -134,8 +158,14 @@ function buildHints(layouts, platformId, expected, policy) {
     modifier: expected.modifiers.includes('Primary')
       ? `This one uses the ${primary.toUpperCase()} key.`
       : MODIFIER_HINT[expected.modifiers[0]] ?? 'This one uses a modifier key.',
-    region: `Look at ${layouts.keyRegions[expected.region]}.`,
-    answer: expected.label,
+    // Position beats naming: it survives a keyboard painted in another
+    // language, which is exactly the case that stalls a class.
+    region: expected.where
+      ? `Look at ${expected.where}.`
+      : `Look at ${layouts.keyRegions[expected.region]}.`,
+    answer: expected.where
+      ? `${expected.label}  —  ${expected.where}`
+      : expected.label,
   };
   return policy.tiers.map(t => ({
     afterAttempts: t.afterAttempts,
