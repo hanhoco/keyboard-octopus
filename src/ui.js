@@ -184,7 +184,9 @@ export function startUI(initialData) {
     for (const [id, l] of Object.entries(layouts.layouts)) {
       const o = document.createElement('option');
       o.value = id;
-      o.textContent = l.name;
+      // Named by what a teacher can SEE on the desk. Brand names would lie:
+      // the Logitech in the next room is a Spanish board, not this one.
+      o.textContent = l.recognise ? `${l.name} — ${l.recognise}` : l.name;
       sel.appendChild(o);
     }
   }

@@ -218,7 +218,8 @@
         "Semicolon": ";",
         "BracketRight": "]",
         "Backquote": "`"
-      }
+      },
+      "recognise": "no Ñ key at all"
     },
     "es-la": {
       "name": "Spanish (Latin America) QWERTY",
@@ -410,7 +411,8 @@
         "Semicolon": "Ñ",
         "BracketRight": "+",
         "Backquote": "|"
-      }
+      },
+      "recognise": "@ printed on the Q key"
     },
     "es-es": {
       "name": "Spanish (Spain) QWERTY",
@@ -588,7 +590,8 @@
         "Semicolon": "Ñ",
         "BracketRight": "+",
         "Backquote": "º"
-      }
+      },
+      "recognise": "@ printed on the 2, and a Ç beside the Ñ"
     }
   },
   "shortcuts": {
