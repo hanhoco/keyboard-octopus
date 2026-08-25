@@ -24,10 +24,17 @@
     "the dot count never changes.",
     "",
     "Leave the list empty to play the full curriculum. Save the file and reload",
+    "`at` pins a target to a numbered dot, for something a class wants to end on.",
+    "",
     "the page; there is nothing to rebuild."
   ],
 
   "ignore": ["^"],
 
-  "add": ["/", "-"]
+  "add": ["/", "-"],
+
+  "at": {
+    "106": "SNIP",
+    "107": "SCREENSHOT"
+  }
 }

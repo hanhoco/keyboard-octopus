@@ -66,8 +66,11 @@ export function isIdleModifier(e, wantsDead = false) {
   return MODIFIER_KEYS.has(e.key);
 }
 
-export function shouldPassThrough(e, layouts, platformId) {
-  if (PASSTHROUGH_KEYS.has(e.key)) return true;
+export function shouldPassThrough(e, layouts, platformId, expectedCode = null) {
+  // A key normally left to the browser stops being the browser's when it is
+  // the answer being asked for. PrintScreen sat on this list, which would have
+  // made a screenshot challenge unsolvable the same way ^ was.
+  if (PASSTHROUGH_KEYS.has(e.key)) return e.code !== expectedCode;
   if (e.altKey && e.ctrlKey) return false;                 // AltGr: a character
   const primary = e[layouts.platforms[platformId].primaryModifier];
   if (primary && PASSTHROUGH_WITH_PRIMARY.has(e.code)) return true;
@@ -673,7 +676,8 @@ export function startUI(initialData) {
     if (isIdleModifier(e, game.currentStep()?.challenge.expected.dead === true)) {
       return;                                   // Shift alone is not a wrong answer
     }
-    if (shouldPassThrough(e, layouts, data.platformId)) return;
+    if (shouldPassThrough(e, layouts, data.platformId,
+                          game.currentStep()?.challenge.expected.code)) return;
     if (game.state.status === COMPLETE) return;
 
     // Everything else belongs to the game: stop the browser saving, printing,

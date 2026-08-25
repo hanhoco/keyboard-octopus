@@ -45,10 +45,33 @@ export async function detectLayout(layouts, nav) {
 }
 
 function combinationLabel(layouts, platformId, modifiers, baseKey) {
-  const primary = layouts.platforms[platformId].primaryLabel;
-  const parts = modifiers.map(m =>
-    m === 'Primary' ? primary : layouts.modifierLabels[m]);
+  const platform = layouts.platforms[platformId];
+  const parts = modifiers.map(m => {
+    if (m === 'Primary') return platform.primaryLabel;
+    if (m === 'Meta') return platform.metaLabel ?? 'Meta';
+    return layouts.modifierLabels[m];
+  });
   return [...parts, baseKey].join(' + ');
+}
+
+/**
+ * Which physical modifiers a shortcut asks for, as browser event flags.
+ *
+ * Written out rather than assumed, because not every shortcut is
+ * "the primary key plus a letter": a screenshot is Win+Shift+S, or a lone
+ * PrtScn with no modifier at all.
+ */
+function modifierState(modifiers, layouts, platformId) {
+  const primaryProp = layouts.platforms[platformId].primaryModifier;
+  const want = { shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+  for (const m of modifiers) {
+    if (m === 'Primary') want[primaryProp] = true;
+    else if (m === 'Shift') want.shiftKey = true;
+    else if (m === 'Alt') want.altKey = true;
+    else if (m === 'Meta') want.metaKey = true;
+    else if (m === 'AltGr') { want.altKey = true; want.ctrlKey = true; }
+  }
+  return want;
 }
 
 /**
@@ -96,14 +119,14 @@ const isAltGr = e => e.altKey === true && e.ctrlKey === true;
 /** Does this keyboard event satisfy the expected input? */
 export function matchesExpected(expected, event, layouts, platformId) {
   const primaryProp = layouts.platforms[platformId].primaryModifier; // ctrlKey | metaKey
-  const otherPrimary = primaryProp === 'ctrlKey' ? 'metaKey' : 'ctrlKey';
 
   if (expected.kind === 'shortcut') {
-    return event.code === expected.code
-      && event[primaryProp] === true
-      && event[otherPrimary] !== true
-      && event.shiftKey !== true
-      && event.altKey !== true;
+    if (event.code !== expected.code) return false;
+    const want = modifierState(expected.modifiers, layouts, platformId);
+    // AltGr reports Ctrl and Alt together; a shortcut asking for neither must
+    // not be satisfied by one of them arriving on its own.
+    return ['shiftKey', 'ctrlKey', 'altKey', 'metaKey']
+      .every(flag => (event[flag] === true) === want[flag]);
   }
   // A dead key delivers no character on keydown: it waits for the next
   // keystroke before deciding what to compose. The question asked which keys
@@ -270,6 +293,15 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
     if (best !== null) plan.set(best, extra);
   }
 
+  /* A target pinned to a dot by hand. The last dots are a natural place for
+     something a class wants to end on. */
+  for (const [seq, target] of Object.entries(config?.at ?? {})) {
+    const n = Number(seq);
+    if (!plan.has(n)) throw new JoinError(`config.at: there is no dot ${seq}`);
+    if (ignored.has(target)) continue;
+    plan.set(n, target);
+  }
+
   const steps = [...geometry.dots]
     .sort((a, b) => a.sequence - b.sequence)
     .map(dot => {
@@ -277,6 +309,11 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
       if (!c) throw new JoinError(`no challenge for dot sequence ${dot.sequence}`);
 
       const target = plan.get(c.sequence);
+      // The kind of question follows the target: pin a shortcut onto a dot and
+      // it becomes a shortcut, whatever the curriculum wrote there.
+      const challengeType = layouts.shortcuts[target]
+        ? 'shortcut-recall'
+        : (c.challengeType === 'shortcut-recall' ? 'character-recall' : c.challengeType);
       const expected = resolveExpectedInput(layouts, lid, pid, target);
       if (!expected) {
         throw new JoinError(
@@ -289,9 +326,9 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
          which there produces a quote mark. The child does exactly as told and
          is marked wrong. The combination must come from the layout, like
          every other combination this game names. */
-      const prompt = c.challengeType === 'combination-recall'
+      const prompt = challengeType === 'combination-recall'
         ? expected.label
-        : (target === c.target ? c.prompt : promptFor(c.challengeType, target, expected));
+        : (target === c.target ? c.prompt : promptFor(challengeType, target, expected));
 
       return {
         sequence: dot.sequence,
@@ -302,7 +339,7 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
         // straight from the curriculum file, plus layout-derived presentation
         challenge: {
           prompt,
-          challengeType: c.challengeType,
+          challengeType,
           difficulty: c.difficulty,
           target,
           expected,

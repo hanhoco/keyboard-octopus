@@ -20,18 +20,21 @@
     "windows": {
       "name": "Windows / Linux",
       "primaryModifier": "ctrlKey",
-      "primaryLabel": "Ctrl"
+      "primaryLabel": "Ctrl",
+      "metaLabel": "Win"
     },
     "mac": {
       "name": "macOS",
       "primaryModifier": "metaKey",
-      "primaryLabel": "Cmd"
+      "primaryLabel": "Cmd",
+      "metaLabel": "Cmd"
     }
   },
   "modifierLabels": {
     "Shift": "Shift",
     "AltGr": "AltGr",
-    "Primary": "{primary}"
+    "Primary": "{primary}",
+    "Meta": "{meta}"
   },
   "keyRegions": {
     "numberRow": "the number row, along the top",
@@ -708,6 +711,23 @@
       "code": "KeyY",
       "region": "letters",
       "difficulty": 4
+    },
+    "SNIP": {
+      "code": "KeyS",
+      "modifiers": [
+        "Meta",
+        "Shift"
+      ],
+      "baseKey": "S",
+      "region": "letters",
+      "note": "part of the screen"
+    },
+    "SCREENSHOT": {
+      "code": "PrintScreen",
+      "modifiers": [],
+      "baseKey": "PrtScn",
+      "region": "topLeft",
+      "note": "the whole screen"
     }
   },
   "characterDifficulty": {
