@@ -19,9 +19,15 @@
     "    not ready for it yet.",
     "  - You want a shorter, easier round for younger children.",
     "",
+    "`add` works the other way: a target listed there is brought INTO the game.",
+    "It takes its turn from whatever is repeated most, so nothing disappears and",
+    "the dot count never changes.",
+    "",
     "Leave the list empty to play the full curriculum. Save the file and reload",
     "the page; there is nothing to rebuild."
   ],
 
-  "ignore": ["^"]
+  "ignore": ["^"],
+
+  "add": ["/", "-"]
 }

@@ -212,6 +212,18 @@
           "baseKey": "`",
           "region": "topLeft",
           "code": "Backquote"
+        },
+        "/": {
+          "modifiers": [],
+          "baseKey": "/",
+          "region": "bottomRow",
+          "code": "Slash"
+        },
+        "-": {
+          "modifiers": [],
+          "baseKey": "-",
+          "region": "numberRow",
+          "code": "Minus"
         }
       },
       "fingerprint": {
@@ -396,7 +408,8 @@
             "Shift"
           ],
           "baseKey": "7",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit7"
         },
         "=": {
           "modifiers": [
@@ -404,6 +417,12 @@
           ],
           "baseKey": "0",
           "region": "numberRow"
+        },
+        "-": {
+          "modifiers": [],
+          "baseKey": "-",
+          "region": "bottomRow",
+          "code": "Slash"
         }
       },
       "source": "kbdla.dll 10.0.29580.1000 via kbdlayout.info",
@@ -584,6 +603,20 @@
           "region": "numberRow",
           "code": "Digit4",
           "dead": true
+        },
+        "/": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "7",
+          "region": "numberRow",
+          "code": "Digit7"
+        },
+        "-": {
+          "modifiers": [],
+          "baseKey": "-",
+          "region": "bottomRow",
+          "code": "Slash"
         }
       },
       "fingerprint": {

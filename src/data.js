@@ -236,7 +236,39 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
   if (![...pool.values()].some(list => list.length)) {
     throw new JoinError('every challenge is on the ignore list; nothing left to ask');
   }
+
+  /* The target standing on each dot, decided before anything is resolved for a
+     particular keyboard. Ignoring and adding both edit this plan; neither ever
+     touches a position. */
+  const plan = new Map(curriculum.challenges.map(c => [c.sequence, c.target]));
+
   let swapped = 0;
+  for (const c of curriculum.challenges) {
+    if (!ignored.has(c.target)) continue;
+    const choices = pool.get(c.challengeType)?.length
+      ? pool.get(c.challengeType)
+      : [...pool.values()].find(l => l.length);
+    plan.set(c.sequence, choices[swapped++ % choices.length]);   // deterministic
+  }
+
+  /* An extra takes its turn from whatever is repeated most, so bringing one in
+     costs the curriculum nothing: no target is ever reduced to zero. */
+  for (const extra of config?.add ?? []) {
+    if (ignored.has(extra)) continue;
+    if ([...plan.values()].includes(extra)) continue;            // already asked
+    const type = layouts.shortcuts[extra] ? 'shortcut-recall' : 'character-recall';
+    const of = curriculum.challenges.filter(c => c.challengeType === type);
+    const counts = new Map();
+    for (const c of of) counts.set(plan.get(c.sequence),
+      (counts.get(plan.get(c.sequence)) ?? 0) + 1);
+    let best = null;
+    for (const c of of) {
+      if ((counts.get(plan.get(c.sequence)) ?? 0) < 2) continue;
+      if (best === null ||
+          counts.get(plan.get(c.sequence)) > counts.get(plan.get(best))) best = c.sequence;
+    }
+    if (best !== null) plan.set(best, extra);
+  }
 
   const steps = [...geometry.dots]
     .sort((a, b) => a.sequence - b.sequence)
@@ -244,15 +276,7 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
       const c = bySequence.get(dot.sequence);
       if (!c) throw new JoinError(`no challenge for dot sequence ${dot.sequence}`);
 
-      let target = c.target;
-      if (ignored.has(target)) {
-        // Deterministic, so the same settings always give the same octopus.
-        const choices = pool.get(c.challengeType)?.length
-          ? pool.get(c.challengeType)
-          : [...pool.values()].find(l => l.length);
-        target = choices[swapped++ % choices.length];
-      }
-
+      const target = plan.get(c.sequence);
       const expected = resolveExpectedInput(layouts, lid, pid, target);
       if (!expected) {
         throw new JoinError(
@@ -290,7 +314,15 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
   /* Everything Skip is allowed to offer instead, resolved once for this
      keyboard. Kept off the steps themselves: one entry per target, not per dot. */
   const alternatives = {};
-  for (const [type, targets] of pool) {
+  const played = new Map();
+  for (const c of curriculum.challenges) {
+    const list = played.get(c.challengeType) ?? [];
+    const t = plan.get(c.sequence);
+    if (!list.includes(t)) list.push(t);
+    played.set(c.challengeType, list);
+  }
+  for (const list of played.values()) list.sort();
+  for (const [type, targets] of played) {
     alternatives[type] = targets.map(t => {
       const e = resolveExpectedInput(layouts, lid, pid, t);
       return e && {
