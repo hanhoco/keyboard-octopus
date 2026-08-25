@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keyboard Check</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#128269;</text></svg>">
+<style>
+  :root {
+    --bg:#eef1f6; --panel:#fff; --ink:#16181d; --muted:#68707d; --border:#d5dae3;
+    --good:#1a8f4c; --bad:#c93a2c; --warn:#b8860b; --accent:#3253d8;
+    --shadow:0 1px 3px rgba(20,25,40,.10), 0 6px 20px rgba(20,25,40,.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#101319; --panel:#181c24; --ink:#e9ecf2; --muted:#98a1b0; --border:#282e3a;
+      --good:#4ade80; --bad:#ff8a7a; --warn:#ffc043; --accent:#7c9bff;
+      --shadow:0 1px 3px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+  .wrap { max-width:56rem; margin:0 auto; padding:24px 18px 64px; }
+  h1 { font-size:24px; margin:0 0 4px; letter-spacing:-.01em; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:22px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:14px;
+          box-shadow:var(--shadow); padding:18px; margin-bottom:16px; }
+  h2 { font:600 11px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--muted); margin:0 0 12px; }
+  .verdict { font-size:clamp(22px,4vw,32px); font-weight:700; line-height:1.2;
+             letter-spacing:-.01em; }
+  .verdict.unknown { color:var(--warn); }
+  .note { color:var(--muted); font-size:14px; margin-top:8px; }
+  table { border-collapse:collapse; width:100%; font:13px/1.5 ui-monospace,monospace; }
+  th, td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border);
+           vertical-align:top; }
+  th { font:600 11px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.07em;
+       text-transform:uppercase; color:var(--muted); }
+  td.k { font-weight:700; font-size:15px; }
+  .ok   { color:var(--good); font-weight:700; }
+  .no   { color:var(--bad);  font-weight:700; }
+  .wait { color:var(--muted); }
+  .box { border:2px dashed var(--border); border-radius:12px; padding:20px;
+         text-align:center; }
+  .box.armed { border-style:solid; border-color:var(--accent); }
+  .big { font:700 clamp(28px,6vw,44px)/1 ui-monospace,monospace; min-height:52px;
+         display:flex; align-items:center; justify-content:center; }
+  .chips { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+  .chip { font:600 11px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.06em;
+          text-transform:uppercase; padding:6px 10px; border-radius:99px;
+          border:1px solid var(--border); color:var(--muted); }
+  .chip.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tech { font:12px/1.5 ui-monospace,monospace; color:var(--muted); margin-top:10px; }
+  button { font:inherit; font-size:14px; padding:9px 16px; border-radius:9px;
+           border:1px solid var(--border); background:var(--panel); color:var(--ink);
+           cursor:pointer; }
+  button:hover { border-color:var(--accent); color:var(--accent); }
+  button:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+  textarea { width:100%; min-height:150px; margin-top:12px; padding:12px;
+             border:1px solid var(--border); border-radius:10px; background:var(--bg);
+             color:var(--ink); font:12px/1.5 ui-monospace,monospace; resize:vertical; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔍 Keyboard Check</h1>
+  <p class="sub">Open this on a lab computer. It reports what Windows believes the
+     keyboard is — not what is printed on the keys.</p>
+
+  <div class="card">
+    <h2>This computer</h2>
+    <div class="verdict" id="verdict">Checking…</div>
+    <div class="note" id="verdictNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>What the physical keys produce</h2>
+    <table><thead><tr><th>Key position</th><th>Produces</th><th>Points to</th></tr></thead>
+      <tbody id="fpRows"><tr><td colspan="3" class="wait">Reading…</td></tr></tbody></table>
+    <div class="note" id="apiNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>The five that break classes</h2>
+    <p class="note" style="margin:0 0 12px">Try each one. Green means this computer
+       can produce it. A character that never turns green cannot be typed here.</p>
+    <table><thead><tr><th>Want</th><th>Press</th><th>Result</th></tr></thead>
+      <tbody id="tryRows"></tbody></table>
+  </div>
+
+  <div class="card">
+    <h2>Live key reader</h2>
+    <div class="box" id="box">
+      <div class="big" id="ch">Press any key</div>
+      <div class="chips" id="chips"></div>
+      <div class="tech" id="tech">Nothing yet.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Send this to your teacher</h2>
+    <div class="row">
+      <button id="copy" type="button">Copy the report</button>
+      <span class="note" id="copied"></span>
+    </div>
+    <textarea id="report" readonly></textarea>
+  </div>
+</div>
+
+<script>
+/* Standalone on purpose: no fetch, no modules, no dependency on the game. It has
+   to run from a URL, a pendrive or a locked-down school profile alike. */
+
+/* What the key to the right of L, the key to the right of Ñ/;, the key to the
+   right of P and the key left of 1 produce with no modifier. Four positions are
+   enough to tell these three keyboards apart. */
+const LAYOUTS = [
+  { id:'us',    name:'US QWERTY',
+    fp:{ Semicolon:';', Quote:"'", BracketRight:']', Backquote:'`' } },
+  { id:'es-la', name:'Spanish (Latin America)',
+    fp:{ Semicolon:'ñ', Quote:'{', BracketRight:'+', Backquote:'|' } },
+  { id:'es-es', name:'Spanish (Spain)',
+    fp:{ Semicolon:'ñ', Quote:'´', BracketRight:'+', Backquote:'º' } },
+];
+
+/* How each keyboard makes the characters that actually stop children.
+   Straight from the Windows layout tables, legends as printed on the key. */
+const TRICKY = {
+  'us':    { '^':'Shift + 6', '@':'Shift + 2', '~':'Shift + `',
+             '<':'Shift + ,', '>':'Shift + .' },
+  'es-la': { '^':'AltGr + {  (dead key)', '@':'AltGr + Q', '~':'AltGr + +',
+             '<':'the key left of Z', '>':'Shift + the key left of Z' },
+  'es-es': { '^':'Shift + `  (dead key)', '@':'AltGr + 2', '~':'AltGr + 4  (dead key)',
+             '<':'the key left of Z', '>':'Shift + the key left of Z' },
+};
+const CHARS = ['^','@','~','<','>'];
+
+const $ = id => document.getElementById(id);
+const found = {};                       // character -> true once produced here
+let layoutId = null, layoutName = 'Unknown', mapPairs = [];
+
+/* ------------------------------------------------------------- detect -- */
+
+async function detect() {
+  let map = null;
+  try { map = await navigator.keyboard?.getLayoutMap?.(); } catch { map = null; }
+
+  if (!map) {
+    $('verdict').textContent = 'This browser will not say';
+    $('verdict').className = 'verdict unknown';
+    $('verdictNote').textContent =
+      'Only Chrome and Edge can report the keyboard layout. Open this page in ' +
+      'Chrome, or use the two sections below, which work in any browser.';
+    $('apiNote').textContent = 'navigator.keyboard.getLayoutMap() is not available here.';
+    $('fpRows').innerHTML = '<tr><td colspan="3" class="wait">Not available.</td></tr>';
+    fillTry('us');
+    writeReport();
+    return;
+  }
+
+  const norm = s => (s ?? '').toLowerCase();
+  const hit = LAYOUTS.find(l =>
+    Object.entries(l.fp).every(([code, ch]) => norm(map.get(code)) === norm(ch)));
+
+  layoutId = hit?.id ?? null;
+  layoutName = hit?.name ?? 'Not one I know';
+  $('verdict').textContent = hit ? hit.name : 'Not a keyboard I know';
+  $('verdict').className = 'verdict' + (hit ? '' : ' unknown');
+  $('verdictNote').textContent = hit
+    ? 'Windows is set to this layout. Whatever is printed on the keys, this is ' +
+      'what they will actually type.'
+    : 'The keys below do not match US, Latin American or Spanish. Copy the ' +
+      'report at the bottom and send it over.';
+
+  const positions = ['Backquote','Digit2','KeyQ','Semicolon','Quote',
+                     'BracketLeft','BracketRight','Backslash','IntlBackslash'];
+  const LABEL = {
+    Backquote:'left of the 1', Digit2:'the 2', KeyQ:'the Q',
+    Semicolon:'right of the L', Quote:'2nd right of the L',
+    BracketLeft:'right of the P', BracketRight:'2nd right of the P',
+    Backslash:'3rd right of the P', IntlBackslash:'left of the Z',
+  };
+  mapPairs = positions.map(code => [code, map.get(code) ?? null]);
+  $('fpRows').innerHTML = mapPairs.map(([code, ch]) => `
+    <tr><td>${LABEL[code]}</td>
+        <td class="k">${ch === null ? '—' : esc(ch)}</td>
+        <td class="wait">${code}</td></tr>`).join('');
+  if (mapPairs.some(([, ch]) => ch === null)) {
+    $('apiNote').textContent =
+      'A dash means Windows maps nothing there. If "left of the Z" is a dash, ' +
+      'this keyboard has no such key and < and > cannot be typed.';
+  }
+  fillTry(layoutId ?? 'us');
+  writeReport();
+}
+
+/* -------------------------------------------------------------- table -- */
+
+function fillTry(id) {
+  const how = TRICKY[id] ?? TRICKY['us'];
+  $('tryRows').innerHTML = CHARS.map(c => `
+    <tr><td class="k">${esc(c)}</td>
+        <td>${how[c]}</td>
+        <td id="r-${c.charCodeAt(0)}" class="wait">not yet</td></tr>`).join('');
+}
+
+function mark(ch) {
+  if (!CHARS.includes(ch) || found[ch]) return;
+  found[ch] = true;
+  const cell = $('r-' + ch.charCodeAt(0));
+  if (cell) { cell.textContent = 'works here'; cell.className = 'ok'; }
+  writeReport();
+}
+
+/* --------------------------------------------------------------- keys -- */
+
+const MODS = [['shiftKey','Shift'], ['ctrlKey','Ctrl'], ['altKey','Alt'], ['metaKey','Win']];
+$('chips').innerHTML = MODS.map(([, l]) => `<span class="chip">${l}</span>`).join('');
+const chipNodes = [...$('chips').children];
+
+let lastSeen = [];
+
+function onKey(e) {
+  MODS.forEach(([flag], i) => chipNodes[i].classList.toggle('on', !!e[flag]));
+  if (e.type !== 'keydown' || e.repeat) return;
+
+  $('box').classList.add('armed');
+  const held = MODS.filter(([f]) => e[f]).map(([, l]) => l).join(' + ');
+
+  if (e.key === 'Dead') {
+    $('ch').textContent = '◌';
+    $('tech').textContent = `dead key · code ${e.code}` + (held ? ` · ${held}` : '');
+  } else if (e.key.length === 1) {
+    $('ch').textContent = e.key === ' ' ? 'Space' : e.key;
+    $('tech').textContent = `key "${e.key}" · code ${e.code}` + (held ? ` · ${held}` : '');
+    mark(e.key);
+  } else {
+    $('ch').textContent = e.key;
+    $('tech').textContent = `key "${e.key}" · code ${e.code}` + (held ? ` · ${held}` : '');
+  }
+
+  lastSeen.push(`${e.key === ' ' ? 'Space' : e.key}  [${e.code}]${held ? '  ' + held : ''}`);
+  if (lastSeen.length > 12) lastSeen.shift();
+  writeReport();
+
+  // Let the browser keep its own shortcuts; this page traps nothing.
+}
+
+/* ------------------------------------------------------------- report -- */
+
+function writeReport() {
+  const lines = [
+    'KEYBOARD CHECK',
+    'Detected layout : ' + layoutName + (layoutId ? ` (${layoutId})` : ''),
+    'Browser         : ' + navigator.userAgent,
+    'Language        : ' + (navigator.language ?? '?'),
+    '',
+    'Key positions:',
+    ...(mapPairs.length
+      ? mapPairs.map(([c, ch]) => `  ${c.padEnd(15)} -> ${ch === null ? '(none)' : ch}`)
+      : ['  (this browser does not report them)']),
+    '',
+    'Characters produced here:',
+    ...CHARS.map(c => `  ${c}  ${found[c] ? 'YES' : 'not tried / not possible'}`),
+    '',
+    'Last keys pressed:',
+    ...(lastSeen.length ? lastSeen.map(l => '  ' + l) : ['  (none)']),
+  ];
+  $('report').value = lines.join('\n');
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' })[c]);
+}
+
+$('copy').addEventListener('click', async () => {
+  const ta = $('report');
+  try {
+    await navigator.clipboard.writeText(ta.value);
+    $('copied').textContent = 'Copied.';
+  } catch {
+    ta.select();
+    $('copied').textContent = 'Press Ctrl + C to copy the selected text.';
+  }
+  setTimeout(() => { $('copied').textContent = ''; }, 4000);
+});
+
+window.addEventListener('keydown', onKey);
+window.addEventListener('keyup', onKey);
+window.addEventListener('blur', () => chipNodes.forEach(n => n.classList.remove('on')));
+
+fillTry('us');
+writeReport();
+detect();
+</script>
+</body>
+</html>
