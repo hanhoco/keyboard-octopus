@@ -110,6 +110,11 @@
   .live-tech { text-align:center; font:12px/1.5 ui-monospace,monospace; color:var(--muted);
                word-break:break-word; }
   .meta { font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; }
+  .warn { border-left:3px solid var(--active); font-size:13px; color:var(--muted); }
+  .warn b { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+            color:var(--ink); margin-bottom:2px; }
+  .warn b + b { display:inline; font-size:inherit; letter-spacing:0; text-transform:none;
+                margin:0; }
   .err { margin:40px auto; max-width:640px; }
   code { background:rgba(128,128,128,.16); padding:2px 6px; border-radius:5px;
          font:13px ui-monospace,monospace; }
@@ -146,6 +151,11 @@
         <div class="live-tech" id="liveTech">Press any key.</div>
       </div>
       <div class="card hint" id="hint" hidden></div>
+      <div class="card warn" id="layoutWarn" hidden>
+        <b>Check the keyboard</b>
+        This browser will not say which keyboard this computer has, so the key
+        names may not match yours. Pick it in the <b>Keyboard</b> menu above.
+      </div>
       <div class="card meta">
         <span id="layoutName">—</span><span id="stats">—</span>
       </div>

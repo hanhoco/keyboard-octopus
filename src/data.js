@@ -34,9 +34,12 @@ export async function detectLayout(layouts, nav) {
   let map = null;
   try { map = await nav?.keyboard?.getLayoutMap?.(); } catch { map = null; }
   if (!map) return null;
+  // Windows spells the key Ñ, the browser hands back ñ. Comparing them
+  // literally would fail to recognise both Spanish keyboards.
+  const same = (a, b) => String(a ?? '').toLowerCase() === String(b ?? '').toLowerCase();
   for (const [id, layout] of Object.entries(layouts.layouts)) {
     const fp = layout.fingerprint;
-    if (fp && Object.entries(fp).every(([code, ch]) => map.get(code) === ch)) return id;
+    if (fp && Object.entries(fp).every(([code, ch]) => same(map.get(code), ch))) return id;
   }
   return null;
 }
@@ -229,9 +232,14 @@ export async function loadGameData({ layoutId, platformId, base = '' } = {}) {
       return res.json();
     }));
   const nav = globalThis.navigator;
-  return joinGameData({
+  const measured = layoutId ? null : await detectLayout(layouts, nav);
+  const data = joinGameData({
     geometry, curriculum, layouts,
-    layoutId: layoutId ?? (await detectLayout(layouts, nav)) ?? undefined,
+    layoutId: layoutId ?? measured ?? undefined,
     platformId: platformId ?? detectPlatform(layouts, nav),
   });
+  // Whether we KNOW the keyboard or merely fell back to the default. The UI
+  // says so out loud rather than naming keys it cannot vouch for.
+  data.layoutConfirmed = Boolean(layoutId || measured);
+  return data;
 }

@@ -50,153 +50,174 @@
             "Shift"
           ],
           "baseKey": "1",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit1"
         },
         "@": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "2",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit2"
         },
         "#": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "3",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit3"
         },
         "$": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "4",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit4"
         },
         "%": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "5",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit5"
         },
         "^": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "6",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit6"
         },
         "&": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "7",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit7"
         },
         "*": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "8",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit8"
         },
         "(": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "9",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit9"
         },
         ")": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "0",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit0"
         },
         "_": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "-",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Minus"
         },
         "+": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "=",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Equal"
         },
         "?": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "/",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "Slash"
         },
         ":": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": ";",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "Semicolon"
         },
         "\"": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "'",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "Quote"
         },
         "<": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": ",",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "Comma"
         },
         ">": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": ".",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "Period"
         },
         "{": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "[",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "BracketLeft"
         },
         "}": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "]",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "BracketRight"
         },
         "|": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "\\",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "Backslash"
         },
         "~": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "`",
-          "region": "topLeft"
+          "region": "topLeft",
+          "code": "Backquote"
         }
       },
       "fingerprint": {
         "Semicolon": ";",
-        "Quote": "'",
-        "BracketRight": "]"
+        "BracketRight": "]",
+        "Backquote": "`"
       }
     },
     "es-la": {
@@ -215,101 +236,116 @@
             "Shift"
           ],
           "baseKey": "1",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit1"
         },
         "\"": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "2",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit2"
         },
         "#": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "3",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit3"
         },
         "$": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "4",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit4"
         },
         "%": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "5",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit5"
         },
         "&": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "6",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit6"
         },
         "(": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "8",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit8"
         },
         ")": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "9",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Digit9"
         },
         "*": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "+",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "BracketRight"
         },
         "+": {
           "modifiers": [],
           "baseKey": "+",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "BracketRight"
         },
         ":": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": ".",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "Period"
         },
         "<": {
           "modifiers": [],
           "baseKey": "<",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "IntlBackslash"
         },
         ">": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "<",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "IntlBackslash"
         },
         "?": {
           "modifiers": [
             "Shift"
           ],
           "baseKey": "'",
-          "region": "numberRow"
+          "region": "numberRow",
+          "code": "Minus"
         },
         "@": {
           "modifiers": [
             "AltGr"
           ],
           "baseKey": "Q",
-          "region": "letters"
+          "region": "letters",
+          "code": "KeyQ"
         },
         "^": {
           "modifiers": [
@@ -325,29 +361,34 @@
             "Shift"
           ],
           "baseKey": "-",
-          "region": "bottomRow"
+          "region": "bottomRow",
+          "code": "Slash"
         },
         "{": {
           "modifiers": [],
           "baseKey": "{",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "Quote"
         },
         "|": {
           "modifiers": [],
           "baseKey": "|",
-          "region": "topLeft"
+          "region": "topLeft",
+          "code": "Backquote"
         },
         "}": {
           "modifiers": [],
           "baseKey": "}",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "Backslash"
         },
         "~": {
           "modifiers": [
             "AltGr"
           ],
           "baseKey": "+",
-          "region": "rightOfLetters"
+          "region": "rightOfLetters",
+          "code": "BracketRight"
         },
         "/": {
           "modifiers": [
@@ -366,9 +407,187 @@
       },
       "source": "kbdla.dll 10.0.29580.1000 via kbdlayout.info",
       "fingerprint": {
-        "Semicolon": "ñ",
-        "Quote": "{",
-        "BracketRight": "+"
+        "Semicolon": "Ñ",
+        "BracketRight": "+",
+        "Backquote": "|"
+      }
+    },
+    "es-es": {
+      "name": "Spanish (Spain) QWERTY",
+      "status": "complete",
+      "source": "kbdsp.dll via kbdlayout.info",
+      "characters": {
+        "!": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "1",
+          "region": "numberRow",
+          "code": "Digit1"
+        },
+        "\"": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "2",
+          "region": "numberRow",
+          "code": "Digit2"
+        },
+        "#": {
+          "modifiers": [
+            "AltGr"
+          ],
+          "baseKey": "3",
+          "region": "numberRow",
+          "code": "Digit3"
+        },
+        "$": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "4",
+          "region": "numberRow",
+          "code": "Digit4"
+        },
+        "%": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "5",
+          "region": "numberRow",
+          "code": "Digit5"
+        },
+        "&": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "6",
+          "region": "numberRow",
+          "code": "Digit6"
+        },
+        "(": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "8",
+          "region": "numberRow",
+          "code": "Digit8"
+        },
+        ")": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "9",
+          "region": "numberRow",
+          "code": "Digit9"
+        },
+        "*": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "+",
+          "region": "rightOfLetters",
+          "code": "BracketRight"
+        },
+        "+": {
+          "modifiers": [],
+          "baseKey": "+",
+          "region": "rightOfLetters",
+          "code": "BracketRight"
+        },
+        ":": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": ".",
+          "region": "bottomRow",
+          "code": "Period"
+        },
+        "<": {
+          "modifiers": [],
+          "baseKey": "<",
+          "region": "bottomRow",
+          "code": "IntlBackslash"
+        },
+        ">": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "<",
+          "region": "bottomRow",
+          "code": "IntlBackslash"
+        },
+        "?": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "'",
+          "region": "numberRow",
+          "code": "Minus"
+        },
+        "@": {
+          "modifiers": [
+            "AltGr"
+          ],
+          "baseKey": "2",
+          "region": "numberRow",
+          "code": "Digit2"
+        },
+        "^": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "`",
+          "region": "rightOfLetters",
+          "code": "BracketLeft",
+          "dead": true
+        },
+        "_": {
+          "modifiers": [
+            "Shift"
+          ],
+          "baseKey": "-",
+          "region": "bottomRow",
+          "code": "Slash"
+        },
+        "{": {
+          "modifiers": [
+            "AltGr"
+          ],
+          "baseKey": "´",
+          "region": "rightOfLetters",
+          "code": "Quote"
+        },
+        "|": {
+          "modifiers": [
+            "AltGr"
+          ],
+          "baseKey": "1",
+          "region": "numberRow",
+          "code": "Digit1"
+        },
+        "}": {
+          "modifiers": [
+            "AltGr"
+          ],
+          "baseKey": "Ç",
+          "region": "rightOfLetters",
+          "code": "Backslash"
+        },
+        "~": {
+          "modifiers": [
+            "AltGr"
+          ],
+          "baseKey": "4",
+          "region": "numberRow",
+          "code": "Digit4",
+          "dead": true
+        }
+      },
+      "fingerprint": {
+        "Semicolon": "Ñ",
+        "BracketRight": "+",
+        "Backquote": "º"
       }
     }
   },

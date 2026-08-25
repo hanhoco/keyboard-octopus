@@ -42,6 +42,26 @@ const MODIFIER_CHIPS = {
   mac:     [['shiftKey','Shift'], ['ctrlKey','Control'], ['altKey','Option'], ['metaKey','Cmd']],
 };
 
+/**
+ * Is this keypress the browser's business rather than the game's?
+ *
+ * AltGr arrives as Ctrl+Alt on Windows and it PRODUCES CHARACTERS, so it is
+ * never a browser shortcut. Without that exception every AltGr character a
+ * Spanish or Latin American keyboard makes — @ among them — was thrown away
+ * here, before the game ever saw it, and the child got silence.
+ *
+ * Exported so it can be tested. It used to be a closure, and that is precisely
+ * how the bug hid.
+ */
+export function shouldPassThrough(e, layouts, platformId) {
+  if (PASSTHROUGH_KEYS.has(e.key)) return true;
+  if (e.altKey && e.ctrlKey) return false;                 // AltGr: a character
+  const primary = e[layouts.platforms[platformId].primaryModifier];
+  if (primary && PASSTHROUGH_WITH_PRIMARY.has(e.code)) return true;
+  if (primary && e.shiftKey && e.altKey) return true;      // devtools-ish combos
+  return false;
+}
+
 export function startUI(initialData) {
   let data = initialData;
   let game, layouts;
@@ -119,6 +139,7 @@ export function startUI(initialData) {
       fetch('keyboard-curriculum.json').then(r => r.json()),
     ]).then(([geometry, curriculum]) => {
       data = joinGameData({ geometry, curriculum, layouts, layoutId: lid, platformId: pid });
+      data.layoutConfirmed = true;          // chosen by a human beats measured
       try { localStorage.setItem(STORE, JSON.stringify({ layoutId: lid, platformId: pid })); }
       catch { /* a locked-down school profile is not a reason to stop playing */ }
       build();
@@ -136,6 +157,7 @@ export function startUI(initialData) {
     renderStep();
     setStatus('', '');
     $('hint').hidden = true;
+    $('layoutWarn').hidden = data.layoutConfirmed !== false;
     resetLive();
     updateProgress();
   }
@@ -342,18 +364,10 @@ export function startUI(initialData) {
 
   /* -------------------------------------------------------------- input -- */
 
-  function shouldPassThrough(e) {
-    if (PASSTHROUGH_KEYS.has(e.key)) return true;
-    const primary = e[layouts.platforms[data.platformId].primaryModifier];
-    if (primary && PASSTHROUGH_WITH_PRIMARY.has(e.code)) return true;
-    if (primary && e.shiftKey && e.altKey) return true;   // devtools-ish combos
-    return false;
-  }
-
   function onKey(e) {
     if (e.repeat) return;                       // holding a key is one attempt
     if (MODIFIER_KEYS.has(e.key)) return;       // Shift alone is not a wrong answer
-    if (shouldPassThrough(e)) return;
+    if (shouldPassThrough(e, layouts, data.platformId)) return;
     if (game.state.status === COMPLETE) return;
 
     // Everything else belongs to the game: stop the browser saving, printing,
