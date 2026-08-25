@@ -125,6 +125,24 @@ export function slowestCombinations(records, limit = 3) {
     .slice(0, limit);
 }
 
+/**
+ * What the student refused most, worst first.
+ *
+ * Grouped by the combination, because pressing Skip four times on AltGr + Q is
+ * one lesson to teach, not four separate incidents.
+ */
+export function mostSkipped(records, limit = 3) {
+  const byLabel = new Map();
+  for (const r of records) {
+    const key = `${r.label}\u0000${r.target}`;
+    const e = byLabel.get(key) ?? { label: r.label, target: r.target, count: 0, dots: [] };
+    e.count += 1;
+    if (!e.dots.includes(r.sequence)) e.dots.push(r.sequence);
+    byLabel.set(key, e);
+  }
+  return [...byLabel.values()].sort((a, b) => b.count - a.count).slice(0, limit);
+}
+
 /** m:ss, for a clock a seven-year-old reads across the room. */
 export function formatClock(ms) {
   const total = Math.max(0, Math.round(ms / 1000));
@@ -611,28 +629,34 @@ export function startUI(initialData) {
     $('report').querySelector('.again')?.remove();
     $('report').appendChild(again);
 
-    const slow = slowestCombinations(run.records, 3);
-    const wrap = $('slowWrap');
-    wrap.replaceChildren();
-    if (!slow.length) return;
+    fillList($('slowWrap'), 'Slowest combinations',
+      slowestCombinations(run?.records ?? [], 3),
+      c => `${c.seconds.toFixed(1)}s` + (c.tries ? ` · ${c.tries} wrong` : ''));
 
+    fillList($('skipWrap'), 'Skipped — could not make these keys',
+      mostSkipped(s.skipped, 4),
+      c => `${c.count}\u00d7` + (c.target ? ` · ${c.target}` : ''));
+
+    $('report').hidden = false;
+  }
+
+  function fillList(wrap, title, items, right) {
+    wrap.replaceChildren();
+    if (!items.length) return;
     const head = document.createElement('div');
     head.className = 'slowHead';
-    head.textContent = 'Slowest combinations';
+    head.textContent = title;
     wrap.appendChild(head);
-
-    for (const c of slow) {
+    for (const c of items) {
       const row = document.createElement('div');
       row.className = 'slowRow';
       const k = document.createElement('kbd');
       k.textContent = c.label;
       const t = document.createElement('em');
-      t.textContent = `${c.seconds.toFixed(1)}s` +
-        (c.tries ? ` · ${c.tries} wrong` : '');
+      t.textContent = right(c);
       row.append(k, t);
       wrap.appendChild(row);
     }
-    $('report').hidden = false;
   }
 
   /* -------------------------------------------------------------- input -- */
@@ -695,6 +719,7 @@ export function startUI(initialData) {
 
   function onComplete() {
     hideActiveMarkers();
+    if (!run) renderReport('finished', 0);   // free play earns a report too
     setStatus('🐙 Octopus complete!', 'good');
     $('prompt').textContent = '🐙';
     $('prompt').className = 'prompt';

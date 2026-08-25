@@ -27,6 +27,7 @@ export function createGame(data, layouts, { hintsEnabled = true, resume = null }
     swaps: {},                  // sequence -> the challenge Skip put there instead
     rerolls: {},                // sequence -> how many times Skip was pressed on it
     skips: 0,
+    skipped: [],                // what was REFUSED, in order: the teaching signal
     totalCorrect: 0,
     totalWrong: 0,
     status: PLAYING,
@@ -141,6 +142,17 @@ export function createGame(data, layouts, { hintsEnabled = true, resume = null }
     const others = pool.filter(c => c.target !== original.challenge.target);
     if (!others.length) return { skipped: false, reason: 'nothing else to ask' };
 
+    // Record what was turned DOWN, not what replaced it. A child pressing Skip
+    // is naming the keys they could not make, and that is the thing worth
+    // knowing before the next lesson.
+    const refused = currentStep().challenge;
+    state.skipped.push({
+      sequence: seq,
+      target: refused.target,
+      label: refused.expected.label,
+      challengeType: refused.challengeType,
+    });
+
     const n = state.rerolls[seq] ?? 0;
     state.rerolls[seq] = n + 1;
     state.swaps[seq] = others[n % others.length];
@@ -167,6 +179,7 @@ export function createGame(data, layouts, { hintsEnabled = true, resume = null }
       wrongAttempts: attempts,
       hintsUsed: Object.values(state.hintsUsed).reduce((a, b) => a + b, 0),
       skips: state.skips,
+      skipped: [...state.skipped],
       accuracy: state.totalCorrect / Math.max(1, state.totalCorrect + state.totalWrong),
     };
   }
