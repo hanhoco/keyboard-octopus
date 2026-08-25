@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>C&oacute;mo dejar configurada cada m&aacute;quina &middot; Pulpo del Teclado</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#9881;&#65039;</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap">
+<style>
+  :root{
+    --paper:#f4f6fa; --card:#fff; --ink:#14161b; --muted:#5f6775; --line:#d9dee7;
+    --amber:#a86a05; --amberBg:#fff4de; --amberLine:#edc37a;
+    --good:#0f6b45; --goodBg:#e6f4ec; --goodLine:#a5d4bb;
+    --bad:#a83626;  --badBg:#fcece9;  --badLine:#eebbb2;
+    --blue:#2b47ad; --blueBg:#edf0fc; --blueLine:#b9c5ef;
+    --shadow:0 1px 2px rgba(20,25,40,.05), 0 10px 28px rgba(20,25,40,.06);
+    --sans:"IBM Plex Sans",ui-sans-serif,system-ui,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --paper:#0f1216; --card:#171b21; --ink:#e8ebf1; --muted:#98a1b0; --line:#272d37;
+    --amber:#f0bd5c; --amberBg:#2a2113; --amberLine:#5a4520;
+    --good:#5fc794; --goodBg:#0f2620; --goodLine:#1f4b3a;
+    --bad:#f0968a;  --badBg:#2d1815;  --badLine:#5c2c26;
+    --blue:#93a8f5; --blueBg:#161c33; --blueLine:#2c3a68;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  } }
+  :root[data-theme="dark"]{
+    --paper:#0f1216; --card:#171b21; --ink:#e8ebf1; --muted:#98a1b0; --line:#272d37;
+    --amber:#f0bd5c; --amberBg:#2a2113; --amberLine:#5a4520;
+    --good:#5fc794; --goodBg:#0f2620; --goodLine:#1f4b3a;
+    --bad:#f0968a;  --badBg:#2d1815;  --badLine:#5c2c26;
+    --blue:#93a8f5; --blueBg:#161c33; --blueLine:#2c3a68;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:15.5px/1.55 var(--sans);
+       -webkit-font-smoothing:antialiased}
+  .sheet{max-width:52rem;margin:0 auto;padding:2.2rem 1.2rem 4rem;
+         display:flex;flex-direction:column;gap:1.4rem}
+  .tag{font:600 11px/1 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  h1{margin:.35rem 0 0;font:700 clamp(1.7rem,4.5vw,2.4rem)/1.1 var(--sans);
+     letter-spacing:-.02em;text-wrap:balance}
+  .lede{margin:.4rem 0 0;color:var(--muted);max-width:40rem}
+
+  .step{background:var(--card);border:1px solid var(--line);border-radius:14px;
+        box-shadow:var(--shadow);padding:1.15rem 1.25rem 1.3rem;
+        display:flex;flex-direction:column;gap:.75rem}
+  .head{display:flex;align-items:baseline;gap:.7rem}
+  .num{font:700 13px/1.7 var(--mono);width:1.75rem;height:1.75rem;flex:none;text-align:center;
+       border-radius:50%;background:var(--ink);color:var(--paper)}
+  h2{margin:0;font:700 1.14rem/1.3 var(--sans);letter-spacing:-.01em}
+  p{margin:0;max-width:40rem}
+  .muted{color:var(--muted);font-size:14px}
+  kbd{font:600 13px/1 var(--mono);background:var(--amberBg);color:var(--amber);
+      border:1px solid var(--amberLine);border-radius:6px;padding:3px 6px;
+      white-space:nowrap;display:inline-block}
+
+  /* maqueta del panel de Windows */
+  .win{border:1px solid var(--line);border-radius:11px;overflow:hidden;font-size:14px}
+  .win .bar{background:var(--blueBg);color:var(--blue);padding:.5rem .8rem;
+            font:600 12px/1 var(--sans);letter-spacing:.05em;text-transform:uppercase;
+            border-bottom:1px solid var(--line)}
+  .win ul{list-style:none;margin:0;padding:0}
+  .win li{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;
+          border-bottom:1px solid var(--line)}
+  .win li:last-child{border-bottom:0}
+  .win .lang{font:600 12px/1 var(--mono);color:var(--muted);width:2.6rem;flex:none}
+  .win .name{flex:1}
+  .win .name small{display:block;color:var(--muted);font-size:12.5px}
+  .win li.keep{background:var(--goodBg)}
+  .win li.drop{background:var(--badBg)}
+  .win li.drop .name{text-decoration:line-through;text-decoration-thickness:1.5px;
+                     opacity:.75}
+  .mark{font:600 11px/1 var(--sans);letter-spacing:.05em;text-transform:uppercase;
+        border-radius:99px;padding:4px 9px;white-space:nowrap}
+  .mark.keep{background:var(--good);color:var(--card)}
+  .mark.drop{background:var(--bad);color:var(--card)}
+
+  /* maqueta del encabezado del juego */
+  .app{border:1px solid var(--line);border-radius:11px;background:var(--paper);
+       padding:.6rem .8rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+       font-size:13px}
+  .app .brand{font-weight:700;white-space:nowrap}
+  .app .pill{border:1px solid var(--line);background:var(--card);border-radius:7px;
+             padding:4px 9px;white-space:nowrap;font:600 12.5px/1 var(--mono)}
+  .app .pill.hi{border-color:var(--good);background:var(--goodBg);color:var(--good)}
+  .app .lbl{color:var(--muted);font-size:12px}
+
+  .warn{background:var(--badBg);border:1px solid var(--badLine);border-radius:11px;
+        padding:.8rem .95rem;font-size:14.5px}
+  .warn b{color:var(--bad)}
+  .ok{background:var(--goodBg);border:1px solid var(--goodLine);border-radius:11px;
+      padding:.8rem .95rem;font-size:14.5px}
+
+  ul.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem}
+  ul.check li{display:flex;gap:.6rem;align-items:baseline;font-size:14.5px}
+  ul.check li::before{content:"\2610";font-size:17px;line-height:1.1;color:var(--muted)}
+
+  .links{display:flex;flex-wrap:wrap;gap:.6rem}
+  .links a{font:600 13.5px/1 var(--sans);text-decoration:none;color:var(--blue);
+           background:var(--blueBg);border:1px solid var(--blueLine);
+           border-radius:8px;padding:8px 12px}
+  .links a:hover{filter:brightness(1.04)}
+  footer{color:var(--muted);font-size:12.5px;text-align:center}
+
+  @media print{
+    :root{--paper:#fff;--card:#fff;--ink:#000;--muted:#444;--line:#999;--shadow:none}
+    body{font-size:10.5pt}
+    .sheet{max-width:none;padding:0;gap:.8rem}
+    .step{break-inside:avoid;border:0;border-top:1.5pt solid #000;border-radius:0;padding:.5rem 0}
+    .links,footer{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div class="tag">Gu&iacute;a de configuraci&oacute;n &middot; Windows</div>
+    <h1>C&oacute;mo dejar cada m&aacute;quina</h1>
+    <p class="lede">Tres pasos, una sola vez por computadora. Despu&eacute;s el juego se
+       configura solo y no hay que tocar nada m&aacute;s.</p>
+  </header>
+
+  <section class="step">
+    <div class="head"><span class="num">1</span><h2>Dejar un solo teclado en Windows</h2></div>
+    <p>Abr&iacute; <b>Configuraci&oacute;n &rsaquo; Hora e idioma &rsaquo; Idioma y regi&oacute;n</b>,
+       entr&aacute; a las opciones de <b>English (United States)</b> y quit&aacute; el teclado
+       <b>US</b>. Ten&eacute;s que quedar as&iacute;:</p>
+
+    <div class="win">
+      <div class="bar">Keyboard layout &nbsp;&middot;&nbsp; Win + Espacio</div>
+      <ul>
+        <li class="keep">
+          <span class="lang">ENG</span>
+          <span class="name">English (United States)<small>Latin American</small></span>
+          <span class="mark keep">dejar</span>
+        </li>
+        <li class="drop">
+          <span class="lang">ENG</span>
+          <span class="name">English (United States)<small>US</small></span>
+          <span class="mark drop">quitar</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="warn"><b>Este es el paso que m&aacute;s problemas caus&oacute;.</b>
+       Con dos teclados instalados, <kbd>Win + Espacio</kbd> y <kbd>Alt + Shift</kbd> los
+       intercambian &mdash; y este juego le pide al chico mantener <kbd>Alt</kbd> y
+       <kbd>Shift</kbd> en casi todos los puntos. Se cambiaba el teclado sin querer y
+       nada volv&iacute;a a funcionar. Con uno solo instalado, no hay a d&oacute;nde cambiar.</div>
+  </section>
+
+  <section class="step">
+    <div class="head"><span class="num">2</span><h2>Confirmar que el teclado es el correcto</h2></div>
+    <p>Mir&aacute; la tecla <kbd>Q</kbd>. Si tiene una <b>@</b> impresa abajo, es
+       latinoamericano y esta configuraci&oacute;n es la tuya.</p>
+    <p class="muted">Si la <b>@</b> est&aacute; sobre el <kbd>2</kbd> y hay una tecla
+       <kbd>&Ccedil;</kbd> al lado de la <kbd>&Ntilde;</kbd>, es un teclado de Espa&ntilde;a:
+       eleg&iacute; <b>Spanish (Spain)</b> en Windows y el juego tambi&eacute;n lo reconoce.</p>
+  </section>
+
+  <section class="step">
+    <div class="head"><span class="num">3</span><h2>Abrir el juego y mirar el encabezado</h2></div>
+    <p>No hay que configurar nada: el juego le pregunta a Windows qu&eacute; teclado hay.
+       Tiene que decir exactamente esto:</p>
+
+    <div class="app">
+      <span class="brand">&#128025; Keyboard Octopus</span>
+      <span class="lbl">Keyboard</span>
+      <span class="pill hi">Spanish (Latin America) QWERTY &mdash; @ printed on the Q key</span>
+      <span class="lbl">Keys</span>
+      <span class="pill hi">Ctrl (Windows / Linux)</span>
+    </div>
+
+    <div class="ok">Si dice esas dos cosas, est&aacute; listo. Las 107 combinaciones quedan
+       nombradas para ese teclado.</div>
+    <p class="muted">Si dice <b>US QWERTY</b>, Windows todav&iacute;a est&aacute; en el teclado
+       equivocado: volv&eacute; al paso 1. No lo corrijas desde el men&uacute; del juego, porque
+       lo que Windows produce no cambia por eso.</p>
+  </section>
+
+  <section class="step">
+    <div class="head"><span class="num">&#10003;</span><h2>Antes de empezar la clase</h2></div>
+    <ul class="check">
+      <li>En la barra de tareas dice <b>ENG LA</b>, no <b>ENG US</b>.</li>
+      <li>El encabezado del juego dice <b>Spanish (Latin America)</b> y <b>Ctrl</b>.</li>
+      <li>La <b>@</b> est&aacute; impresa sobre la tecla <b>Q</b>.</li>
+      <li>Prob&aacute; <kbd>AltGr + {</kbd>: en el punto del <b>^</b> tiene que aceptarlo
+          aunque no aparezca nada en pantalla.</li>
+    </ul>
+  </section>
+
+  <section class="links">
+    <a href="./">&#128025; El juego</a>
+    <a href="respuestas.html">&#128203; Las 107 respuestas</a>
+    <a href="diagnostic.html">&#128269; Revisar una m&aacute;quina</a>
+  </section>
+
+  <footer>Pulpo del Teclado &middot; hanhoco.github.io/keyboard-octopus</footer>
+</div>
+</body>
+</html>
