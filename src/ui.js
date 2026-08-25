@@ -62,6 +62,30 @@ export function shouldPassThrough(e, layouts, platformId) {
   return false;
 }
 
+/**
+ * A MEASUREMENT BEATS A MEMORY.
+ *
+ * getLayoutMap() reports what this machine's keys really do. A remembered
+ * choice is only ever a guess, and a stale one is worse than none: a link
+ * handed out once pinned "Latin American" onto a computer whose Windows was
+ * set to US English, and from then on the child was asked for AltGr + { on a
+ * keyboard where that produces nothing at all.
+ *
+ * So a stored or URL layout fills in ONLY when the keyboard could not be
+ * measured. The modifier key is different: it comes from the user agent, is
+ * never measured, and a person may legitimately pin it.
+ */
+export function resolveSetup({ measured, url = {}, remembered = {}, known }) {
+  const ok = (kind, id) => (id && known[kind]?.[id] ? id : null);
+  const asked = ok('layouts', url.layout) ?? ok('layouts', remembered.layoutId);
+  return {
+    layoutId: measured.confirmed ? measured.layoutId : (asked ?? measured.layoutId),
+    platformId: ok('platforms', url.keys)
+             ?? ok('platforms', remembered.platformId)
+             ?? measured.platformId,
+  };
+}
+
 export function startUI(initialData) {
   let data = initialData;
   let game, layouts;
@@ -109,15 +133,20 @@ export function startUI(initialData) {
     return id && layouts[kind][id] ? id : null;
   }
 
-  /** URL wins, then the choice this machine remembers, then what was detected. */
   function chosenSetup() {
     const q = new URLSearchParams(location.search);
-    return {
-      layoutId: valid('layouts', q.get('layout'))
-             ?? valid('layouts', saved().layoutId) ?? data.layoutId,
-      platformId: valid('platforms', q.get('keys'))
-               ?? valid('platforms', saved().platformId) ?? data.platformId,
-    };
+    if (q.get('layout') === 'auto') forget();
+    return resolveSetup({
+      measured: { layoutId: data.layoutId, platformId: data.platformId,
+                  confirmed: data.layoutConfirmed !== false },
+      url: { layout: q.get('layout'), keys: q.get('keys') },
+      remembered: saved(),
+      known: layouts,
+    });
+  }
+
+  function forget() {
+    try { localStorage.removeItem(STORE); } catch { /* nothing to forget */ }
   }
 
   function fillLayoutMenu() {
