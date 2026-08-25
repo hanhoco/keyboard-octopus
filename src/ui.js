@@ -53,6 +53,19 @@ const MODIFIER_CHIPS = {
  * Exported so it can be tested. It used to be a closure, and that is precisely
  * how the bug hid.
  */
+/**
+ * Is this keypress only a modifier settling, with no answer in it?
+ *
+ * 'Dead' lives in that set because an accent key normally produces nothing.
+ * But on a Latin American keyboard the answer to ^ IS the dead key, and
+ * bailing here meant it never reached the game at all: the code written to
+ * accept it was unreachable, and five dots could not be solved by anyone.
+ */
+export function isIdleModifier(e, wantsDead = false) {
+  if (e.key === 'Dead') return !wantsDead;
+  return MODIFIER_KEYS.has(e.key);
+}
+
 export function shouldPassThrough(e, layouts, platformId) {
   if (PASSTHROUGH_KEYS.has(e.key)) return true;
   if (e.altKey && e.ctrlKey) return false;                 // AltGr: a character
@@ -574,6 +587,14 @@ export function startUI(initialData) {
     $('scoreSub').textContent =
       `${Math.round(s.accuracy * 100)}% first try · ${run.minutes} minute round`;
 
+    const again = document.createElement('button');
+    again.type = 'button';
+    again.className = 'again';
+    again.textContent = 'Play again';
+    again.addEventListener('click', () => { cancelChallenge(); build(); });
+    $('report').querySelector('.again')?.remove();
+    $('report').appendChild(again);
+
     const slow = slowestCombinations(run.records, 3);
     const wrap = $('slowWrap');
     wrap.replaceChildren();
@@ -601,9 +622,17 @@ export function startUI(initialData) {
   /* -------------------------------------------------------------- input -- */
 
   function onKey(e) {
-    if (run && run.phase !== 'running') return; // counting in, or the round is over
+    if (run && run.phase === 'countdown') return;      // hands on, clock not yet
+    if (run && run.phase === 'over') {
+      // Never go silent. A frozen board with no explanation is indistinguishable
+      // from a broken keyboard, and that is exactly how it was read.
+      setStatus('The round is over — press Play again, or pick a new challenge.', 'bad');
+      return;
+    }
     if (e.repeat) return;                       // holding a key is one attempt
-    if (MODIFIER_KEYS.has(e.key)) return;       // Shift alone is not a wrong answer
+    if (isIdleModifier(e, game.currentStep()?.challenge.expected.dead === true)) {
+      return;                                   // Shift alone is not a wrong answer
+    }
     if (shouldPassThrough(e, layouts, data.platformId)) return;
     if (game.state.status === COMPLETE) return;
 
