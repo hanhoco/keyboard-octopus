@@ -486,7 +486,12 @@ const FILES = {
  */
 export async function loadConfig(base = '') {
   try {
-    const res = await fetch(`${base}game-config.json`);
+    /* Always fetched fresh. This is the one file a teacher edits, and a
+       browser holding yesterday's copy silently undoes the change they just
+       made — which is exactly how a pinned seed kept handing back the same
+       octopus after it had been removed. */
+    const res = await fetch(`${base}game-config.json?v=${Date.now()}`,
+                            { cache: 'no-store' });
     if (!res.ok) return { ignore: [], add: [], at: {}, balance: false, shuffle: false };
     const cfg = await res.json();
     const out = {
