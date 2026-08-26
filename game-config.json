@@ -44,7 +44,6 @@
 
   "balance": true,
   "shuffle": true,
-  "seed": 20260825,
 
   "add": ["/", "-"],
 
