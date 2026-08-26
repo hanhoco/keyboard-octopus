@@ -302,6 +302,58 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
     plan.set(n, target);
   }
 
+  /* Deal the questions out so nothing returns until its kind has been through,
+     and so a repeat never lands next to itself.
+     
+     For each dot in order, take the target of its kind that has been used
+     LEAST, and among those the one seen LONGEST ago. Fewest-used keeps the
+     counts within one of each other; longest-ago pushes repeats apart. It
+     beats rotating a list, because a symbol can belong to two kinds at once —
+     # is a character AND the answer to Shift + 3 — and two independent
+     rotations collide where this cannot. Ties break on sort order, so a whole
+     class still draws the same octopus. */
+  if (config?.balance) {
+    const pinned = new Set(Object.keys(config.at ?? {}).map(Number));
+    const spoken = new Set(Object.values(config.at ?? {}));
+    const poolFor = new Map();
+    for (const type of new Set(curriculum.challenges.map(c => c.challengeType))) {
+      poolFor.set(type, [...new Set(curriculum.challenges
+        .filter(c => c.challengeType === type)
+        .map(c => plan.get(c.sequence)))]
+        .filter(t => !spoken.has(t)).sort());
+    }
+
+    /* Counted per kind, spaced across all of them. A symbol can belong to two
+       kinds — # is a character AND the answer to Shift + 3 — and counting its
+       uses globally would starve it in one kind because the other spent it. */
+    const usedIn = new Map();     // type -> (target -> how many dots it took)
+    const lastAt = new Map();     // target -> the dot index it last took, any kind
+    const uses = (type, t) => usedIn.get(type)?.get(t) ?? 0;
+    const spend = (type, t, n) => {
+      const m = usedIn.get(type) ?? new Map();
+      m.set(t, n);
+      usedIn.set(type, m);
+    };
+    [...curriculum.challenges].sort((a, b) => a.sequence - b.sequence)
+      .forEach((c, i) => {
+        const type = c.challengeType;
+        if (pinned.has(c.sequence)) {
+          const t = plan.get(c.sequence);
+          spend(type, t, uses(type, t) + 1);
+          lastAt.set(t, i);
+          return;
+        }
+        const pool = poolFor.get(type) ?? [];
+        if (!pool.length) return;
+        const fewest = Math.min(...pool.map(t => uses(type, t)));
+        const pick = pool.filter(t => uses(type, t) === fewest)
+          .reduce((best, t) => (lastAt.get(t) ?? -1) < (lastAt.get(best) ?? -1) ? t : best);
+        plan.set(c.sequence, pick);
+        spend(type, pick, fewest + 1);
+        lastAt.set(pick, i);
+      });
+  }
+
   const steps = [...geometry.dots]
     .sort((a, b) => a.sequence - b.sequence)
     .map(dot => {

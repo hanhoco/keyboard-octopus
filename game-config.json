@@ -26,10 +26,16 @@
     "Leave the list empty to play the full curriculum. Save the file and reload",
     "`at` pins a target to a numbered dot, for something a class wants to end on.",
     "",
+    "`balance` deals the questions out by turns: nothing comes back until every",
+    "other combination of its kind has been asked once. Without it the curriculum",
+    "repeats some symbols seven times and others once.",
+    "",
     "the page; there is nothing to rebuild."
   ],
 
   "ignore": ["^"],
+
+  "balance": true,
 
   "add": ["/", "-"],
 
