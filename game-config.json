@@ -26,6 +26,13 @@
     "Leave the list empty to play the full curriculum. Save the file and reload",
     "`at` pins a target to a numbered dot, for something a class wants to end on.",
     "",
+    "`shuffle` draws the order at random. `seed` makes that draw repeatable: the",
+    "same number always gives the same octopus, so a whole class sees one set of",
+    "questions and the answer sheet still matches. CHANGE THE NUMBER for a fresh",
+    "arrangement. Remove `seed` entirely and every page load is different \u2014 good",
+    "for free practice, but then no answer sheet can match and two children in a",
+    "timed round are no longer doing the same work.",
+    "",
     "`balance` deals the questions out by turns: nothing comes back until every",
     "other combination of its kind has been asked once. Without it the curriculum",
     "repeats some symbols seven times and others once.",
@@ -36,6 +43,8 @@
   "ignore": ["^"],
 
   "balance": true,
+  "shuffle": true,
+  "seed": 20260825,
 
   "add": ["/", "-"],
 

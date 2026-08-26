@@ -215,6 +215,32 @@ export class JoinError extends Error {}
  * Every target the curriculum uses, grouped by kind of challenge.
  * Used both to replace an ignored target and to reroll one on Skip.
  */
+/**
+ * A small seeded generator, so "random" can be replayed.
+ *
+ * Chance and reproducibility are not opposites here: a class needs the same
+ * octopus as each other on the same day, and the answer sheet has to match
+ * what the screen asks. The seed is what makes both true at once.
+ */
+function randomFrom(seed) {
+  let a = (Number(seed) || 0) >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffled(list, rand) {
+  const out = [...list];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 function targetsByType(curriculum, allowed) {
   const byType = new Map();
   for (const c of curriculum.challenges) {
@@ -313,6 +339,7 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
      rotations collide where this cannot. Ties break on sort order, so a whole
      class still draws the same octopus. */
   if (config?.balance) {
+    const rand = config.shuffle ? randomFrom(config.seed ?? 1) : null;
     const pinned = new Set(Object.keys(config.at ?? {}).map(Number));
     const spoken = new Set(Object.values(config.at ?? {}));
     const poolFor = new Map();
@@ -346,8 +373,13 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
         const pool = poolFor.get(type) ?? [];
         if (!pool.length) return;
         const fewest = Math.min(...pool.map(t => uses(type, t)));
-        const pick = pool.filter(t => uses(type, t) === fewest)
-          .reduce((best, t) => (lastAt.get(t) ?? -1) < (lastAt.get(best) ?? -1) ? t : best);
+        /* Chance decides only between equals. Everything the dealing
+           guarantees — every turn taken before any repeats, counts within one
+           of each other, repeats pushed far apart — survives untouched. */
+        const tied = pool.filter(t => uses(type, t) === fewest);
+        const order = rand ? shuffled(tied, rand) : tied;
+        const pick = order.reduce((best, t) =>
+          (lastAt.get(t) ?? -1) < (lastAt.get(best) ?? -1) ? t : best);
         plan.set(c.sequence, pick);
         spend(type, pick, fewest + 1);
         lastAt.set(pick, i);
@@ -432,6 +464,7 @@ export function joinGameData({ geometry, curriculum, layouts, layoutId, platform
     closed: geometry.meta.closed === true,
     layoutId: lid,
     platformId: pid,
+    seed: config?.shuffle ? (config.seed ?? 1) : null,
     layoutName: layouts.layouts[lid].name,
     platformName: layouts.platforms[pid].name,
     total: steps.length,
@@ -454,11 +487,24 @@ const FILES = {
 export async function loadConfig(base = '') {
   try {
     const res = await fetch(`${base}game-config.json`);
-    if (!res.ok) return { ignore: [] };
+    if (!res.ok) return { ignore: [], add: [], at: {}, balance: false, shuffle: false };
     const cfg = await res.json();
-    return { ignore: Array.isArray(cfg?.ignore) ? cfg.ignore : [] };
+    const out = {
+      ignore: Array.isArray(cfg?.ignore) ? cfg.ignore : [],
+      add: Array.isArray(cfg?.add) ? cfg.add : [],
+      at: cfg?.at && typeof cfg.at === 'object' ? cfg.at : {},
+      balance: cfg?.balance === true,
+      shuffle: cfg?.shuffle === true,
+    };
+    // A seed written in the file pins the run; without one a fresh draw is
+    // made per page load, and the game shows which so it can be replayed.
+    if (out.shuffle) {
+      out.seed = Number.isFinite(cfg?.seed) ? cfg.seed
+        : Math.floor(Math.random() * 1e9);
+    }
+    return out;
   } catch {
-    return { ignore: [] };
+    return { ignore: [], add: [], at: {}, balance: false, shuffle: false };
   }
 }
 

@@ -311,7 +311,8 @@ export function startUI(initialData) {
     if (resume) replayEarnedSegments();
     $('layout').value = data.layoutId;
     $('platform').value = data.platformId;
-    $('layoutName').textContent = `${data.layoutName} · ${data.platformName}`;
+    $('layoutName').textContent = `${data.layoutName} · ${data.platformName}` +
+      (data.seed ? ` · sorteo ${data.seed}` : '');
     renderStep();
     setStatus('', '');
     $('hint').hidden = true;
